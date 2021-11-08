@@ -19,5 +19,4 @@ int main(int argc, char * argv[])
     close(fd);
     //sscanf(str,format_string,&var);s
     printf("%c\n", atoi(str));
-    sleep(30);
 }

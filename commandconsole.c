@@ -19,20 +19,6 @@ int open_pipe(int ch2, char* pipe_addr)
     close(fd);
 }
 
-char get_input(char str[], int nchars)
-{
-    int i = 0;
-    int ch;
-    while((ch = getchar()) != '\n' && ch != EOF)
-    {
-        if(i < nchars)
-            str[i++] = ch;
-    }
-    str[i] = '\0';
-    
-    return *str;
-}
-
 
 int main(int argc, char * argv[])
 {
