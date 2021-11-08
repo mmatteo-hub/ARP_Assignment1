@@ -1,3 +1,10 @@
+# Ignore file
+commandconsole
+executor
+motorX
+motorZ
+inspectionconsole
+
 # Compiled source #
 ###################
 *.com
