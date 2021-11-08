@@ -6,16 +6,16 @@
 #include <unistd.h> 
 #include <stdlib.h>
 
-int fd;
-char str[80];
 char format_string[80] = "%d";
 char format_str_var[80] = "%c";
 
 int open_pipe(int ch2, char* pipe_addr)
 {
-    sprintf(str, format_string, ch2);
+    int fd;
+    char outup_string[80];
+    sprintf(outup_string, format_string, ch2);
     fd = open(pipe_addr, O_WRONLY);
-    write(fd, str, strlen(str)+1);
+    write(fd, outup_string, strlen(outup_string)+1);
     close(fd);
 }
 

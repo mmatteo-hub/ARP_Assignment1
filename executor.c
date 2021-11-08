@@ -38,9 +38,7 @@ int main()
   mkfifo(myfifo_watchdog,0666);
 
   char input_string[BUFFSIZE];
-  char str[80]; 
-  char strp[80];
-  char strp2[80];
+  char outup_string[80];
   char format_string_multiple[80] = "%d,%d,%d,%d,%d";
   char format_string_single[80] = "%d";
 
@@ -73,11 +71,11 @@ int main()
   fflush(stdout);
 
   // saving all 5 processes' pids
-  sprintf(str, format_string_multiple, pid1, pid2, pid3, pid4, pid5);
+  sprintf(outup_string, format_string_multiple, pid1, pid2, pid3, pid4, pid5);
   
   // passing pids to watch dog through pipe
   fd = open(myfifo_watchdog, O_WRONLY);
-  write(fd,str, strlen(str)+1);
+  write(fd, outup_string, strlen(outup_string)+1);
   close(fd);
 
   printf ("Main program exiting...\n");
