@@ -17,9 +17,6 @@ int main(int argc, char * argv[])
     fd = open(fifo_mot_commX, O_RDONLY);
     read(fd, str, 80);
     close(fd);
-
-    
-
     //sscanf(str,format_string,&var);s
     printf("%c\n", atoi(str));
     sleep(30);

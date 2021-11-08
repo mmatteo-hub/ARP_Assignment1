@@ -28,27 +28,30 @@ int main()
   int val;
   char * myfifo_inspection = "/tmp/fifo_inspection";
   char * myfifo_command = "/tmp/fifo_command";
-  char * myfifo_motors = "/tmp/fifo_motors";
+  char * myfifo_motorX = "/tmp/fifo_motX";
+  char * myfifo_motorZ = "/tmp/fifo_motZ";
   char * myfifo_watchdog = "/tmp/fifo_watchdog";
   mkfifo(myfifo_inspection,0666);
   mkfifo(myfifo_command,0666);
-  mkfifo(myfifo_motors,0666);
+  mkfifo(myfifo_motorX,0666);
+  mkfifo(myfifo_motorZ,0666);
   mkfifo(myfifo_watchdog,0666);
 
   char input_string[BUFFSIZE];
   char str[80]; 
   char strp[80];
   char strp2[80];
-  char format_string_multiple[80] = "%d,%d,%d,%d";
+  char format_string_multiple[80] = "%d,%d,%d,%d,%d";
   char format_string_single[80] = "%d";
 
-  char * arg_list_1[] = { "/usr/bin/konsole",  "-e", "./motors"};
-  char * arg_list_2[] = { "/usr/bin/konsole",  "-e", "./commandconsole"};
-  char * arg_list_3[] = { "/usr/bin/konsole",  "-e", "./inspectionconsole"}; 
-  char * arg_list_4[] = { "/usr/bin/konsole" , "-e", "./watchdog"};
+  char * arg_list_1[] = { "/usr/bin/konsole",  "-e", "./motorX"};
+  char * arg_list_2[] = { "/usr/bin/konsole",  "-e", "./motorZ"};
+  char * arg_list_3[] = { "/usr/bin/konsole",  "-e", "./commandconsole"};
+  char * arg_list_4[] = { "/usr/bin/konsole",  "-e", "./inspectionconsole"}; 
+  char * arg_list_5[] = { "/usr/bin/konsole" , "-e", "./watchdog"};
   
-  // creation of 4 processes
-  int pid1, pid2, pid3, pid4;
+  // creation of 5 processes
+  int pid1, pid2, pid3, pid4, pid5;
   pid1 = spawn("/usr/bin/konsole", arg_list_1);
   printf("1st konsole (PID = %d)\n", pid1);
   fflush(stdout);
@@ -65,8 +68,12 @@ int main()
   printf("4th konsole (PID = %d)\n", pid4);
   fflush(stdout);
 
-  // saving all 4 processes' pids
-  sprintf(str, format_string_multiple, pid1, pid2, pid3, pid4);
+  pid5 = spawn("/usr/bin/konsole", arg_list_5);
+  printf("5th konsole (PID = %d)\n", pid5);
+  fflush(stdout);
+
+  // saving all 5 processes' pids
+  sprintf(str, format_string_multiple, pid1, pid2, pid3, pid4, pid5);
   
   // passing pids to watch dog through pipe
   fd = open(myfifo_watchdog, O_WRONLY);
