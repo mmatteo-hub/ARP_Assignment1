@@ -8,13 +8,13 @@
 
 int main(int argc, char * argv[])
 {
-    char * fifo_mot_comm = "/tmp/comm_mot";
-    mkfifo(fifo_mot_comm,0666);
+    char * fifo_mot_commZ = "/tmp/comm_motZ";
+    mkfifo(fifo_mot_commZ,0666);
 
     int fd;
     char str[80];
 
-    fd = open(fifo_mot_comm, O_RDONLY);
+    fd = open(fifo_mot_commZ, O_RDONLY);
     read(fd, str, 80);
     close(fd);
     //sscanf(str,format_string,&var);s
