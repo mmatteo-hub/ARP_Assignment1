@@ -12,7 +12,7 @@ int spawn(const char * program, char ** arg_list)
 {
   pid_t child_pid = fork();
   if (child_pid != 0)
-  return child_pid;
+    return child_pid;
   else 
   {
     execvp (program, arg_list);
@@ -39,8 +39,10 @@ int main()
 
   char input_string[BUFFSIZE];
   char outup_string[80];
+  char motor_pids_string[80];
+  char out_str[80];
   char format_string_multiple[80] = "%d,%d,%d,%d,%d";
-  char format_string_single[80] = "%d";
+  char format_string_mot[80] = "%d,%d";
 
   char * arg_list_1[] = { "/usr/bin/konsole",  "-e", "./motorX"};
   char * arg_list_2[] = { "/usr/bin/konsole",  "-e", "./motorZ"};
@@ -72,7 +74,7 @@ int main()
 
   // saving all 5 processes' pids
   sprintf(outup_string, format_string_multiple, pid1, pid2, pid3, pid4, pid5);
-  
+
   // passing pids to watch dog through pipe
   fd = open(myfifo_watchdog, O_WRONLY);
   write(fd, outup_string, strlen(outup_string)+1);
