@@ -13,20 +13,20 @@ char str_p[80];
 char format_str_p[80] = "%d";
 int fd;
 
-int v; // value to change according to the signal
+int v = 0; // value to change according to the signal
 
-void sig_handler(int signo)
+void sig_handler_1(int signo)
 {
     if(signo == SIGUSR1)
     {
         v = 1;
-        printf("Right or Left pressed, v = %d\n",v);
+        printf("Right or Left pressed, signal SIGUSR1, v = %d\n",v);
         fflush(stdout);
     }
-    else if(signo == SIGINT)
+    else if(signo == SIGUSR2)
     {
         v = 0;
-        printf("Stop pressed, v = %d\n",v);
+        printf("Stop pressed, signal SIGUSR2, v = %d\n",v);
         fflush(stdout);
     }
     else
@@ -39,7 +39,14 @@ void sig_handler(int signo)
 
 int main(int argc, char * argv[])
 {
-    signal(SIGUSR1, sig_handler);
+    struct sigaction sa;
+    sa.sa_handler = sig_handler_1;
+    sa.sa_flags = 0;
+    sigemptyset(&sa.sa_mask);
+
+    sigaction(SIGUSR1, &sa, NULL);
+    sigaction(SIGUSR2, &sa, NULL);
+
     char * fifo_mot_commX = "/tmp/comm_motX";
     char * fifo_valX = "/tmp/fifo_valX";
     mkfifo(fifo_mot_commX,0666);
@@ -65,7 +72,7 @@ int main(int argc, char * argv[])
         {
             if(atoi(input_string) == 100)
             {
-                if(x_position < 50)
+                if(x_position < 5)
                 {
                     x_position += 0.25;
                     printf("X position = %f\n",x_position);
@@ -91,6 +98,7 @@ int main(int argc, char * argv[])
                 {
                     printf("X position cannot be decreased any more!\n");
                     fflush(stdout);
+                    v = 0;
                 }
             }
             else if(atoi(input_string) == 115)
@@ -106,6 +114,7 @@ int main(int argc, char * argv[])
                 x_position = 0;
                 printf("X position = %f\n",x_position);
                 fflush(stdout);
+                break;
             }
         }
     }

@@ -77,6 +77,7 @@ int main(int argc, char * argv[])
                     printf("LEFT WAS PRESSED\n");
                     fflush(stdout);
                     open_pipe(var, fifo_valX);
+                    kill(pidX_got,SIGUSR1);
                     break;
 
                 case 100:
@@ -90,14 +91,14 @@ int main(int argc, char * argv[])
                     printf("STOP WAS PRESSED\n");
                     fflush(stdout);
                     open_pipe(var, fifo_valX);
-                    kill(pidX_got,SIGINT);
+                    kill(pidX_got,SIGUSR2);
                     break;
 
                 case 114:
                     printf("RESET WAS PRESSED\n");
                     fflush(stdout);
                     open_pipe(var, fifo_valX);
-                    kill(pidX_got,SIGUSR1);
+                    kill(pidX_got,SIGUSR2);
                     break;
 
                 default:
