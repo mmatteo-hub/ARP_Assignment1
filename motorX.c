@@ -17,8 +17,24 @@ int v; // value to change according to the signal
 
 void sig_handler(int signo)
 {
-    if(signo == SIGUSR1) v = 1;
-    else v = 0;
+    if(signo == SIGUSR1)
+    {
+        v = 1;
+        printf("Right or Left pressed, v = %d\n",v);
+        fflush(stdout);
+    }
+    else if(signo == SIGINT)
+    {
+        v = 0;
+        printf("Stop pressed, v = %d\n",v);
+        fflush(stdout);
+    }
+    else
+    {
+        v = -1;
+        printf("Inside else sig_handler, v = %d\n",v);
+        fflush(stdout);
+    }
 }
 
 int main(int argc, char * argv[])

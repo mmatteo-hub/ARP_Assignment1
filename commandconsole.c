@@ -90,7 +90,7 @@ int main(int argc, char * argv[])
                     printf("STOP WAS PRESSED\n");
                     fflush(stdout);
                     open_pipe(var, fifo_valX);
-                    kill(pidX_got,SIGUSR1);
+                    kill(pidX_got,SIGINT);
                     break;
 
                 case 114:
