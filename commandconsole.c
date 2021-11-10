@@ -26,6 +26,7 @@ int open_pipe(int ch2, char* pipe_addr)
 
 int main(int argc, char * argv[])
 {
+    char outup_string[80];
     // pipe from command console to motors
     char * fifo_comm_motX = "/tmp/comm_motX";
     char * fifo_comm_motZ = "/tmp/comm_motZ";
@@ -46,6 +47,7 @@ int main(int argc, char * argv[])
     
     while(1)
     {
+        fd = open(fifo_valX, O_WRONLY);
         printf("PRESS: \n w to go UP\n z to go DOWN\n d to go RIGHT\n a to go LEFT\n\n R to RESET\n S to STOP\n");
         fflush(stdout);
         scanf("%s",ch1);
@@ -58,6 +60,8 @@ int main(int argc, char * argv[])
 
         else
         {
+            char out_str[80];
+            sprintf(out_str,format_string,ch1[0]);
             var = ch1[0];
             switch(var)
             {
@@ -76,25 +80,29 @@ int main(int argc, char * argv[])
                 case 97:
                     printf("LEFT WAS PRESSED\n");
                     fflush(stdout);
-                    open_pipe(var, fifo_valX);
+                    write(fd, out_str, strlen(ch1)+1);
+                    //open_pipe(var, fifo_valX);
                     break;
 
                 case 100:
                     printf("RIGHT WAS PRESSED\n");
                     fflush(stdout);
-                    open_pipe(var, fifo_valX);
+                    write(fd, out_str, strlen(out_str)+1);
+                    //open_pipe(var, fifo_valX);
                     break;
 
                 case 115:
                     printf("STOP WAS PRESSED\n");
                     fflush(stdout);
-                    open_pipe(var, fifo_valX);
+                    write(fd, out_str, strlen(out_str)+1);
+                    //open_pipe(var, fifo_valX);
                     break;
 
                 case 114:
                     printf("RESET WAS PRESSED\n");
                     fflush(stdout);
-                    open_pipe(var, fifo_valX);
+                    write(fd, out_str, strlen(out_str)+1);
+                    //open_pipe(var, fifo_valX);
                     break;
 
                 default:
@@ -103,5 +111,6 @@ int main(int argc, char * argv[])
                     break;
             }
         }
+        close(fd);
     }
 }

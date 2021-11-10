@@ -32,11 +32,14 @@ int main(int argc, char * argv[])
     int retval;
 
     char input_string[80];
+    char format_string[80] = "%d";
+    char input_str;
 
     while(1)
     {
         // open pipe
         int fd_val = open(fifo_valX,O_RDONLY);
+        
         printf("pipe opened\n");
         fflush(stdout);
         sleep(1);
@@ -46,10 +49,6 @@ int main(int argc, char * argv[])
 
         tv.tv_sec = 0;
         tv.tv_usec = 0;
-
-        printf("here!\n");
-        fflush(stdout);
-        sleep(1);
 
         retval = select(FD_SETSIZE+1,&rfds,NULL,NULL,&tv);
         printf("retval.. = %d\n",retval);
@@ -102,7 +101,8 @@ int main(int argc, char * argv[])
 
             default: // got a new value
                 read(fd_val, input_string, 80);
-                printf("input str, case retval1 = %d\n",atoi(input_string));
+                //sprintf(input_str, format_string, input_string);
+                printf("input str, case retval1 = %s\n",input_string);
                 fflush(stdout);
                 sleep(1);
                 printf("retval1 = %d\n",retval);
