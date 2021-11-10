@@ -6,116 +6,114 @@
 #include <unistd.h> 
 #include <stdlib.h>
 #include <signal.h>
+#include <sys/select.h>
 
-float x_position = 0;
-char comm_pid[80];
-char str_p[80];
-char format_str_p[80] = "%d";
-int fd;
-
-int v = 0; // value to change according to the signal
-
-void sig_handler_1(int signo)
-{
-    if(signo == SIGUSR1)
-    {
-        v = 1;
-        printf("Right or Left pressed, signal SIGUSR1, v = %d\n",v);
-        fflush(stdout);
-    }
-    else if(signo == SIGUSR2)
-    {
-        v = 0;
-        printf("Stop pressed, signal SIGUSR2, v = %d\n",v);
-        fflush(stdout);
-    }
-    else
-    {
-        v = -1;
-        printf("Inside else sig_handler, v = %d\n",v);
-        fflush(stdout);
-    }
-}
+float x_position = 0; // motorX positiion
 
 int main(int argc, char * argv[])
 {
-    struct sigaction sa;
-    sa.sa_handler = sig_handler_1;
-    sa.sa_flags = 0;
-    sigemptyset(&sa.sa_mask);
-
-    sigaction(SIGUSR1, &sa, NULL);
-    sigaction(SIGUSR2, &sa, NULL);
-
     char * fifo_mot_commX = "/tmp/comm_motX";
     char * fifo_valX = "/tmp/fifo_valX";
     mkfifo(fifo_mot_commX,0666);
     mkfifo(fifo_valX,0666);
 
     // send the process pid via pipe to the command console
-    fd = open(fifo_mot_commX,O_WRONLY);
-    sprintf(str_p,format_str_p,(int)getpid());
-    write(fd,str_p,strlen(str_p)+1);
+    char pid_string[80];
+    char format_pid_string[80] = "%d";
+    int fd = open(fifo_mot_commX,O_WRONLY);
+    sprintf(pid_string,format_pid_string,(int)getpid());
+    write(fd,pid_string,strlen(pid_string)+1);
     close(fd);
+    
+
+    // initialise struct for the select
+    fd_set rfds;
+    struct timeval tv;
+    int retval;
+
+    char input_string[80];
 
     while(1)
     {
-        int fd;
-        char input_string[80];
+        // open pipe
+        int fd_val = open(fifo_valX,O_RDONLY);
+        printf("pipe opened\n");
+        fflush(stdout);
+        sleep(1);
 
-        //get the command from the command console
-        fd = open(fifo_valX, O_RDONLY);
-        read(fd, input_string, 80);
-        close(fd);
+        FD_ZERO(&rfds);
+        FD_SET(fd_val,&rfds);
 
-        while(v)
+        tv.tv_sec = 0;
+        tv.tv_usec = 0;
+
+        printf("here!\n");
+        fflush(stdout);
+        sleep(1);
+
+        retval = select(FD_SETSIZE+1,&rfds,NULL,NULL,&tv);
+        printf("retval.. = %d\n",retval);
+        fflush(stdout);
+        sleep(1);
+        switch(retval)
         {
-            if(atoi(input_string) == 100)
-            {
-                if(x_position < 5)
-                {
-                    x_position += 0.25;
-                    printf("X position = %f\n",x_position);
-                    fflush(stdout);
-                    sleep(1);
-                }
-                else
-                {
-                    printf("X position cannot be incremented any more!\n");
-                    fflush(stdout);
-                }
-            }
-            else if(atoi(input_string) == 97)
-            {
-                if(x_position > 0)
-                {
-                    x_position -= 0.25;
-                    printf("X position = %f\n",x_position);
-                    fflush(stdout);
-                    sleep(1);
-                }
-                else
-                {
-                    printf("X position cannot be decreased any more!\n");
-                    fflush(stdout);
-                    v = 0;
-                }
-            }
-            else if(atoi(input_string) == 115)
-            {
-                printf("STOP!\n");
+            case -1: // select error
+                perror("select()");
                 fflush(stdout);
                 break;
-            }
-            else if(atoi(input_string) == 114)
-            {
-                printf("Resetting ... \n");
+
+            case 0: // no new value
+                switch(atoi(input_string))
+                {
+                    case 100: // right
+                        if(x_position < 3)
+                        {
+                            x_position += 0.25;
+                            printf("X = %f\n",x_position);
+                            fflush(stdout);
+                            sleep(1);
+                        }
+                        else
+                        {
+                            printf("X cannot be increased any more\n");
+                            fflush(stdout);
+                        }
+                        break;
+
+                    case 97: // left
+                        if(x_position > 0)
+                        {
+                            x_position -= 0.25;
+                            printf("X = %f\n",x_position);
+                            fflush(stdout);
+                            sleep(1);
+                        }
+                        else
+                        {
+                            printf("X cannot be decreased any more\n");
+                            fflush(stdout);
+                        }
+                        break;
+                    
+                    default:
+                        break;
+                }
+                break;
+
+            default: // got a new value
+                read(fd_val, input_string, 80);
+                printf("input str, case retval1 = %d\n",atoi(input_string));
                 fflush(stdout);
-                x_position = 0;
-                printf("X position = %f\n",x_position);
+                sleep(1);
+                printf("retval1 = %d\n",retval);
                 fflush(stdout);
                 break;
-            }
         }
+        close(fd_val);
+        printf("pipe closed\n");
+        fflush(stdout);
+        sleep(1);
+        printf("finished loop\n");
+        fflush(stdout);
     }
 }
