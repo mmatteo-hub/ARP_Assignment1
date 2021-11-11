@@ -39,10 +39,6 @@ int main(int argc, char * argv[])
     {
         // open pipe
         int fd_val = open(fifo_valX,O_RDONLY);
-        
-        printf("pipe opened\n");
-        fflush(stdout);
-        sleep(1);
 
         FD_ZERO(&rfds);
         FD_SET(fd_val,&rfds);
@@ -51,9 +47,7 @@ int main(int argc, char * argv[])
         tv.tv_usec = 0;
 
         retval = select(FD_SETSIZE+1,&rfds,NULL,NULL,&tv);
-        printf("retval.. = %d\n",retval);
-        fflush(stdout);
-        sleep(1);
+
         switch(retval)
         {
             case -1: // select error
@@ -64,21 +58,6 @@ int main(int argc, char * argv[])
             case 0: // no new value
                 switch(atoi(input_string))
                 {
-                    case 100: // right
-                        if(x_position < 3)
-                        {
-                            x_position += 0.25;
-                            printf("X = %f\n",x_position);
-                            fflush(stdout);
-                            sleep(1);
-                        }
-                        else
-                        {
-                            printf("X cannot be increased any more\n");
-                            fflush(stdout);
-                        }
-                        break;
-
                     case 97: // left
                         if(x_position > 0)
                         {
@@ -93,6 +72,34 @@ int main(int argc, char * argv[])
                             fflush(stdout);
                         }
                         break;
+
+                    case 100: // right
+                        if(x_position < 20)
+                        {
+                            x_position += 0.25;
+                            printf("X = %f\n",x_position);
+                            fflush(stdout);
+                            sleep(1);
+                        }
+                        else
+                        {
+                            printf("X cannot be increased any more\n");
+                            fflush(stdout);
+                        }
+                        break;
+
+                    case 114: // reset
+                        printf("Resetting...\n");
+                        fflush(stdout);
+                        x_position = 0;
+                        sleep(1);
+                        break;
+
+                    case 115: // stop
+                        printf("Stop X = %f\n",x_position);
+                        fflush(stdout);
+                        sleep(1);
+                        break;
                     
                     default:
                         break;
@@ -101,19 +108,8 @@ int main(int argc, char * argv[])
 
             default: // got a new value
                 read(fd_val, input_string, 80);
-                //sprintf(input_str, format_string, input_string);
-                printf("input str, case retval1 = %s\n",input_string);
-                fflush(stdout);
-                sleep(1);
-                printf("retval1 = %d\n",retval);
-                fflush(stdout);
                 break;
         }
         close(fd_val);
-        printf("pipe closed\n");
-        fflush(stdout);
-        sleep(1);
-        printf("finished loop\n");
-        fflush(stdout);
     }
 }

@@ -7,7 +7,7 @@
 #include <stdlib.h>
 #include <signal.h>
 
-int fd;
+int fdX, fdZ;
 char format_string[80] = "%d";
 char format_str_var[80] = "%c";
 char pid_motX[80];
@@ -15,14 +15,14 @@ char pid_motZ[80];
 int pidX_got;
 int pidZ_got;
 
-int open_pipe(int ch2, char* pipe_addr)
+/*int open_pipe(int ch2, char* pipe_addr)
 {
     char outup_string[80];
     sprintf(outup_string, format_string, ch2);
     fd = open(pipe_addr, O_WRONLY);
     write(fd, outup_string, strlen(outup_string)+1);
     close(fd);
-}
+}*/
 
 int main(int argc, char * argv[])
 {
@@ -32,22 +32,29 @@ int main(int argc, char * argv[])
     char * fifo_comm_motZ = "/tmp/comm_motZ";
     char * myfifo_command = "/tmp/fifo_command";
     char * fifo_valX = "/tmp/fifo_valX";
+    char * fifo_valZ = "/tmp/fifo_valZ";
     mkfifo(fifo_comm_motX,0666);
     mkfifo(fifo_comm_motZ,0666);
     mkfifo(myfifo_command,0666);
     mkfifo(fifo_valX,0666);
 
-    fd = open(fifo_comm_motX,O_RDONLY);
-    read(fd, pid_motX, 80);
+    fdX = open(fifo_comm_motX,O_RDONLY);
+    read(fdX, pid_motX, 80);
     sscanf(pid_motX, format_string, &pidX_got);
-    close(fd);
+    close(fdX);
+
+    fdZ = open(fifo_comm_motZ,O_RDONLY);
+    read(fdX, pid_motZ, 80);
+    sscanf(pid_motZ, format_string, &pidZ_got);
+    close(fdZ);
     
     char ch1[80];
     char var;
     
     while(1)
     {
-        fd = open(fifo_valX, O_WRONLY);
+        fdX = open(fifo_valX, O_WRONLY);
+        fdZ = open(fifo_valZ, O_WRONLY);
         printf("PRESS: \n w to go UP\n z to go DOWN\n d to go RIGHT\n a to go LEFT\n\n R to RESET\n S to STOP\n");
         fflush(stdout);
         scanf("%s",ch1);
@@ -68,41 +75,39 @@ int main(int argc, char * argv[])
                 case 119:
                     printf("UP WAS PRESSED\n");
                     fflush(stdout);
-                    open_pipe(var, fifo_comm_motZ);
+                    write(fdZ, out_str, strlen(out_str)+1);
                     break;
 
                 case 122:
                     printf("DOWN WAS PRESSED\n");
                     fflush(stdout);
-                    open_pipe(var, fifo_comm_motZ);
+                    write(fdZ, out_str, strlen(out_str)+1);
                     break;
                     
                 case 97:
                     printf("LEFT WAS PRESSED\n");
                     fflush(stdout);
-                    write(fd, out_str, strlen(ch1)+1);
-                    //open_pipe(var, fifo_valX);
+                    write(fdX, out_str, strlen(out_str)+1);
                     break;
 
                 case 100:
                     printf("RIGHT WAS PRESSED\n");
                     fflush(stdout);
-                    write(fd, out_str, strlen(out_str)+1);
-                    //open_pipe(var, fifo_valX);
-                    break;
-
-                case 115:
-                    printf("STOP WAS PRESSED\n");
-                    fflush(stdout);
-                    write(fd, out_str, strlen(out_str)+1);
-                    //open_pipe(var, fifo_valX);
+                    write(fdX, out_str, strlen(out_str)+1);
                     break;
 
                 case 114:
                     printf("RESET WAS PRESSED\n");
                     fflush(stdout);
-                    write(fd, out_str, strlen(out_str)+1);
-                    //open_pipe(var, fifo_valX);
+                    write(fdX, out_str, strlen(out_str)+1);
+                    write(fdZ, out_str, strlen(out_str)+1);
+                    break;
+
+                case 115:
+                    printf("STOP WAS PRESSED\n");
+                    fflush(stdout);
+                    write(fdX, out_str, strlen(out_str)+1);
+                    write(fdZ, out_str, strlen(out_str)+1);
                     break;
 
                 default:
@@ -111,6 +116,7 @@ int main(int argc, char * argv[])
                     break;
             }
         }
-        close(fd);
+        close(fdZ);
+        close(fdX);
     }
 }
