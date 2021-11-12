@@ -34,8 +34,9 @@ int main(int argc, char * argv[])
     int retval;
 
     char input_string[80];
-    char format_string[80] = "%f";
+    char format_string[80] = "%s";
     char input_str;
+    char passVal[80];
 
     while(1)
     {
@@ -65,7 +66,8 @@ int main(int argc, char * argv[])
                         if(x_position > 0)
                         {
                             x_position -= 0.25;
-                            write(fd_x,input_string,strlen(input_string)+1);
+                            sprintf(passVal,format_string,x_position);
+                            write(fd_x,passVal,strlen(passVal)+1);
                             //printf("X = %f\n",x_position);
                             //fflush(stdout);
                             sleep(1);
@@ -81,8 +83,10 @@ int main(int argc, char * argv[])
                         if(x_position < 20)
                         {
                             x_position += 0.25;
-                            printf("X = %f\n",x_position);
-                            fflush(stdout);
+                            sprintf(passVal,format_string,x_position);
+                            write(fd_x,passVal,strlen(passVal)+1);
+                            //printf("X = %f\n",x_position);
+                            //fflush(stdout);
                             sleep(1);
                         }
                         else
