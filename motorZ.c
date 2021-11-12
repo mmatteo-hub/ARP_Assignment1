@@ -14,8 +14,10 @@ int main(int argc, char * argv[])
 {
     char * fifo_mot_commZ = "/tmp/comm_motZ";
     char * fifo_valZ = "/tmp/fifo_valZ";
+    char * fifo_motZinsp = "/tmp/insp_motZ";
     mkfifo(fifo_mot_commZ,0666);
     mkfifo(fifo_valZ,0666);
+    mkfifo(fifo_motZinsp,0666);
 
     // send the process pid via pipe to the command console
     char pid_string[80];
@@ -32,7 +34,7 @@ int main(int argc, char * argv[])
     int retval;
 
     char input_string[80];
-    char format_string[80] = "%d";
+    char format_string[80] = "%f";
     char input_str;
 
     while(1)

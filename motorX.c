@@ -14,8 +14,10 @@ int main(int argc, char * argv[])
 {
     char * fifo_mot_commX = "/tmp/comm_motX";
     char * fifo_valX = "/tmp/fifo_valX";
+    char * fifo_motXinsp = "/tmp/insp_motX";
     mkfifo(fifo_mot_commX,0666);
     mkfifo(fifo_valX,0666);
+    mkfifo(fifo_motXinsp,0666);
 
     // send the process pid via pipe to the command console
     char pid_string[80];
@@ -32,13 +34,14 @@ int main(int argc, char * argv[])
     int retval;
 
     char input_string[80];
-    char format_string[80] = "%d";
+    char format_string[80] = "%f";
     char input_str;
 
     while(1)
     {
         // open pipe
         int fd_val = open(fifo_valX,O_RDONLY);
+        int fd_x = open(fifo_motXinsp,O_WRONLY);
 
         FD_ZERO(&rfds);
         FD_SET(fd_val,&rfds);
@@ -62,8 +65,9 @@ int main(int argc, char * argv[])
                         if(x_position > 0)
                         {
                             x_position -= 0.25;
-                            printf("X = %f\n",x_position);
-                            fflush(stdout);
+                            write(fd_x,input_string,strlen(input_string)+1);
+                            //printf("X = %f\n",x_position);
+                            //fflush(stdout);
                             sleep(1);
                         }
                         else
@@ -110,6 +114,7 @@ int main(int argc, char * argv[])
                 read(fd_val, input_string, 80);
                 break;
         }
+        close(fd_x);
         close(fd_val);
     }
 }
