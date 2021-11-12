@@ -14,10 +14,12 @@ int main(int argc, char * argv[])
 {
     char * fifo_mot_commX = "/tmp/comm_motX";
     char * fifo_valX = "/tmp/fifo_valX";
-    char * fifo_motXinsp = "/tmp/insp_motX";
+    char * fifo_motXinsp = "/tmp/motX_insp";
+    char * fifo_inspmotX = "/tmp/insp_motX";
     mkfifo(fifo_mot_commX,0666);
     mkfifo(fifo_valX,0666);
     mkfifo(fifo_motXinsp,0666);
+    mkfifo(fifo_inspmotX,0666);
 
     // send the process pid via pipe to the command console
     char pid_string[80];
@@ -33,16 +35,18 @@ int main(int argc, char * argv[])
     struct timeval tv;
     int retval;
 
-    char input_string[80];
-    char format_string[80] = "%s";
+    char input_string_comm[80];
+    char input_string_insp[80];
+    char format_string[80] = "%f";
     char input_str;
     char passVal[80];
 
     while(1)
     {
         // open pipe
-        int fd_val = open(fifo_valX,O_RDONLY);
-        int fd_x = open(fifo_motXinsp,O_WRONLY);
+        int fd_val = open(fifo_valX, O_RDONLY);
+        int fd_insp = open(fifo_inspmotX, O_RDONLY);
+        int fd_x = open(fifo_motXinsp, O_WRONLY);
 
         FD_ZERO(&rfds);
         FD_SET(fd_val,&rfds);
@@ -60,7 +64,7 @@ int main(int argc, char * argv[])
                 break;
 
             case 0: // no new value
-                switch(atoi(input_string))
+                switch(atoi(input_string_comm))
                 {
                     case 97: // left
                         if(x_position > 0)
@@ -68,8 +72,6 @@ int main(int argc, char * argv[])
                             x_position -= 0.25;
                             sprintf(passVal,format_string,x_position);
                             write(fd_x,passVal,strlen(passVal)+1);
-                            //printf("X = %f\n",x_position);
-                            //fflush(stdout);
                             sleep(1);
                         }
                         else
@@ -85,8 +87,6 @@ int main(int argc, char * argv[])
                             x_position += 0.25;
                             sprintf(passVal,format_string,x_position);
                             write(fd_x,passVal,strlen(passVal)+1);
-                            //printf("X = %f\n",x_position);
-                            //fflush(stdout);
                             sleep(1);
                         }
                         else
@@ -96,14 +96,13 @@ int main(int argc, char * argv[])
                         }
                         break;
 
-                    case 114: // reset
-                        printf("Resetting...\n");
-                        fflush(stdout);
-                        x_position = 0;
+                    case 113: // stop
+                        sprintf(passVal,format_string,x_position);
+                        write(fd_x,passVal,strlen(passVal)+1);
                         sleep(1);
                         break;
 
-                    case 115: // stop
+                    case 115: // emergency stop
                         printf("Stop X = %f\n",x_position);
                         fflush(stdout);
                         sleep(1);
@@ -115,10 +114,12 @@ int main(int argc, char * argv[])
                 break;
 
             default: // got a new value
-                read(fd_val, input_string, 80);
+                read(fd_val, input_string_comm, 80);
+                read(fd_insp, input_string_insp, 80);
                 break;
         }
         close(fd_x);
+        close(fd_insp);
         close(fd_val);
     }
 }

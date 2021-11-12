@@ -55,7 +55,7 @@ int main(int argc, char * argv[])
     {
         fdX = open(fifo_valX, O_WRONLY);
         fdZ = open(fifo_valZ, O_WRONLY);
-        printf("PRESS: \n w to go UP\n z to go DOWN\n d to go RIGHT\n a to go LEFT\n\n R to RESET\n S to STOP\n");
+        printf("PRESS: \n w to go UP\n z to go DOWN\n d to go RIGHT\n a to go LEFT\n\n q to STOP X\n e to STOP Z\n");
         fflush(stdout);
         scanf("%s",ch1);
 
@@ -96,17 +96,15 @@ int main(int argc, char * argv[])
                     write(fdX, out_str, strlen(out_str)+1);
                     break;
 
-                case 114:
-                    printf("RESET WAS PRESSED\n");
+                case 113:
+                    printf("STOP X WAS PRESSED\n");
                     fflush(stdout);
                     write(fdX, out_str, strlen(out_str)+1);
-                    write(fdZ, out_str, strlen(out_str)+1);
                     break;
 
-                case 115:
-                    printf("STOP WAS PRESSED\n");
+                case 101:
+                    printf("STOP Z WAS PRESSED\n");
                     fflush(stdout);
-                    write(fdX, out_str, strlen(out_str)+1);
                     write(fdZ, out_str, strlen(out_str)+1);
                     break;
 
