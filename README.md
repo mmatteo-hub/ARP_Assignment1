@@ -3,7 +3,7 @@ This is the shared repository to work on the assignment 1 of the Advanced and Ro
 
 to run the program
 * check for executable permission of file `konsole.sh` by: `ls -l`
-  * if no executable do: `chmod +x konsole.sh`
+  * if no executable do: `chmod +x konsole.sh`, then do again `ls -l` and check the presence of the executable mode and a green colour of the file
   * if yes run `./konsole.sh`
 
 The `.sh` file already compiles all executables output for each `.c` file.
