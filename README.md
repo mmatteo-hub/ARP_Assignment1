@@ -6,4 +6,6 @@ to run the program
   * if no executable do: `chmod +x konsole.sh`
   * if yes run `./konsole.sh`
 
-the `.sh` file already compile all executable for each `.c` file
+The `.sh` file already compiles all executables output for each `.c` file.
+
+![sh](https://user-images.githubusercontent.com/62358773/141454581-1497575f-9d9c-466c-a443-c2576fa5b05c.jpg)
