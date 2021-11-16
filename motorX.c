@@ -102,12 +102,25 @@ int main(int argc, char * argv[])
                         sleep(1);
                         break;
 
-                    case 115: // emergency stop
-                        printf("Stop X = %f\n",x_position);
-                        fflush(stdout);
+                    default:
+                        break;
+                }
+
+                switch(atoi(input_string_insp)) 
+                {
+                    case 114: // reset
+                        x_position = 0;
+                        sprintf(passVal,format_string,x_position);
+                        write(fd_x,passVal,strlen(passVal)+1);
                         sleep(1);
                         break;
-                    
+
+                    case 115: // emergency stop
+                        sprintf(passVal,format_string,x_position);
+                        write(fd_x,passVal,strlen(passVal)+1);
+                        sleep(1);
+                        break;
+
                     default:
                         break;
                 }
