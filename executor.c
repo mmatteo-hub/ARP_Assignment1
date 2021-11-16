@@ -44,10 +44,10 @@ int main()
   char format_string_multiple[80] = "%d,%d,%d,%d,%d";
   char format_string_mot[80] = "%d,%d";
 
-  char * arg_list_1[] = { "/usr/bin/konsole",  "-e", "./motorX"};
-  char * arg_list_2[] = { "/usr/bin/konsole",  "-e", "./motorZ"};
-  char * arg_list_3[] = { "/usr/bin/konsole",  "-e", "./commandconsole"};
-  char * arg_list_4[] = { "/usr/bin/konsole",  "-e", "./inspectionconsole"}; 
+  char * arg_list_1[] = { "/usr/bin/konsole",  "-e", "./commandconsole"};
+  char * arg_list_2[] = { "/usr/bin/konsole",  "-e", "./inspectionconsole"}; 
+  char * arg_list_3[] = { "/usr/bin/konsole",  "-e", "./motorX"};
+  char * arg_list_4[] = { "/usr/bin/konsole",  "-e", "./motorZ"};
   char * arg_list_5[] = { "/usr/bin/konsole" , "-e", "./watchdog"};
   
   // creation of 5 processes

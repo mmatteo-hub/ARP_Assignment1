@@ -31,7 +31,6 @@ int main(int argc, char * argv[])
     mkfifo(fifo_inspmotZ, 0666);
     mkfifo(fifo_motXinsp, 0666);
     mkfifo(fifo_motZinsp, 0666);
-    fflush(stdout);
 
     char ch1[80];
     char var;

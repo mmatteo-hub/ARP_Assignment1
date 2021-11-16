@@ -50,6 +50,7 @@ int main(int argc, char * argv[])
 
         FD_ZERO(&rfds);
         FD_SET(fd_val,&rfds);
+        FD_SET(fd_insp,&rfds);
 
         tv.tv_sec = 0;
         tv.tv_usec = 0;
@@ -105,7 +106,6 @@ int main(int argc, char * argv[])
                     default:
                         break;
                 }
-
                 switch(atoi(input_string_insp)) 
                 {
                     case 114: // reset
@@ -127,8 +127,14 @@ int main(int argc, char * argv[])
                 break;
 
             default: // got a new value
-                read(fd_val, input_string_comm, 80);
-                read(fd_insp, input_string_insp, 80);
+                if(FD_ISSET(fd_val,&rfds))
+                {
+                    read(fd_val, input_string_comm, 80);
+                }
+                if(FD_ISSET(fd_insp,&rfds))
+                {
+                    read(fd_insp, input_string_insp, 80);
+                }
                 break;
         }
         close(fd_x);
