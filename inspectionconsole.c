@@ -37,29 +37,25 @@ int main(int argc, char * argv[])
 
     while(1)
     {
-        printf("dentro\n");
-        fflush(stdout);
+        // using the pipe to read the position from motorX
         fd_x_read = open(fifo_motXinsp, O_RDONLY);
-        printf("dentro x read\n");
-        fflush(stdout);
         read(fd_x_read, input_string_x, 80);
         close(fd_x_read);
 
+        // using the pipe to read the position from motorZ
         fd_z_read = open(fifo_motZinsp, O_RDONLY);
-        printf("dentro z read\n");
-        fflush(stdout);
         read(fd_z_read, input_string_z, 80);
         close(fd_z_read);
 
-        fd_x_write = open(fifo_inspmotX, O_WRONLY);
-        printf("dentro x write\n");
-        fflush(stdout);
+        // opening the pipes comunicating with the motors to use them for passing reset and emergency commands
+        fd_x_write = open(fifo_inspmotX, O_WRONLY);;
         fd_z_write = open(fifo_inspmotZ, O_WRONLY);
-        printf("dentro z write\n");
-        fflush(stdout);
 
+        // printing the position got from motors
         printf("X = %s\nZ = %s\n", input_string_x, input_string_z);
         fflush(stdout);
+
+        // printing the menu for choosing the option to pass to motors
         printf("PRESS: \n s to STOP both motors for an emergency\n r to RESET both motors\n");
         fflush(stdout);
         scanf("%s", ch1);
@@ -73,18 +69,22 @@ int main(int argc, char * argv[])
         else
         {
             char out_str[80];
-            sprintf(out_str, format_string, ch1[0]);
+            sprintf(out_str, format_string, ch1[0]); // prints the char according to a format string
             var = ch1[0];
             switch(var)
             {
-                case 114:
+                // reset
+                case 114: // case r
+                case 82: // case R
                     printf("RESET WAS PRESSED\n");
                     fflush(stdout);
                     write(fd_x_write, out_str, strlen(out_str)+1);
                     write(fd_z_write, out_str, strlen(out_str)+1);
                     break;
 
-                case 115:
+                // emergency stop
+                case 115: // case s
+                case 83: // case S
                     printf("EMERGENCY STOP WAS PRESSED\n");
                     fflush(stdout);
                     write(fd_x_write, out_str, strlen(out_str)+1);
@@ -96,6 +96,8 @@ int main(int argc, char * argv[])
                     break;
             }
         }
+
+        // closing pipes
         close(fd_z_write);
         close(fd_x_write);
     }

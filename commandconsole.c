@@ -18,10 +18,15 @@ int pidZ_got;
 int main(int argc, char * argv[])
 {
     char outup_string[80];
-    // pipe from command console to motors
+
+    // pipes from command console to motors
     char * fifo_comm_motX = "/tmp/comm_motX";
     char * fifo_comm_motZ = "/tmp/comm_motZ";
+
+    // pipe communicating with the executor
     char * myfifo_command = "/tmp/fifo_command";
+
+    // pipes to pass the value from command console to the motorX and motorZ respectevely
     char * fifo_valX = "/tmp/fifo_valX";
     char * fifo_valZ = "/tmp/fifo_valZ";
     mkfifo(fifo_comm_motX,0666);
@@ -29,11 +34,13 @@ int main(int argc, char * argv[])
     mkfifo(myfifo_command,0666);
     mkfifo(fifo_valX,0666);
 
+    // takes the pid of motorX and stores it into a variable
     fdX = open(fifo_comm_motX,O_RDONLY);
     read(fdX, pid_motX, 80);
     sscanf(pid_motX, format_string, &pidX_got);
     close(fdX);
 
+    // takes the pid of motorZ and stores it into a variable
     fdZ = open(fifo_comm_motZ,O_RDONLY);
     read(fdX, pid_motZ, 80);
     sscanf(pid_motZ, format_string, &pidZ_got);
@@ -44,13 +51,14 @@ int main(int argc, char * argv[])
     
     while(1)
     {
+        // opens pipe to write the command inserted by the user
         fdX = open(fifo_valX, O_WRONLY);
         fdZ = open(fifo_valZ, O_WRONLY);
         printf("PRESS: \n w to go UP\n z to go DOWN\n d to go RIGHT\n a to go LEFT\n\n q to STOP X\n e to STOP Z\n");
         fflush(stdout);
         scanf("%s",ch1);
 
-        if(strlen(ch1) != 1)
+        if(strlen(ch1) != 1) // input error because two or more characters written
         {
             printf("Wrong input. Input has to be 1 character only!\n");
             fflush(stdout);
@@ -59,41 +67,47 @@ int main(int argc, char * argv[])
         else
         {
             char out_str[80];
-            sprintf(out_str,format_string,ch1[0]);
+            sprintf(out_str,format_string,ch1[0]); // prints the char according to a format string
             var = ch1[0];
             switch(var)
             {
-                case 119:
+                case 119: // case w
+                case 87: // case W
                     printf("UP WAS PRESSED\n");
                     fflush(stdout);
                     write(fdZ, out_str, strlen(out_str)+1);
                     break;
 
-                case 122:
+                case 122 :// case z
+                case 90: // case Z
                     printf("DOWN WAS PRESSED\n");
                     fflush(stdout);
                     write(fdZ, out_str, strlen(out_str)+1);
                     break;
                     
-                case 97:
+                case 97: // case a
+                case 65: // case A
                     printf("LEFT WAS PRESSED\n");
                     fflush(stdout);
                     write(fdX, out_str, strlen(out_str)+1);
                     break;
 
-                case 100:
+                case 100: // case d
+                case 68: // case D
                     printf("RIGHT WAS PRESSED\n");
                     fflush(stdout);
                     write(fdX, out_str, strlen(out_str)+1);
                     break;
 
-                case 113:
+                case 113: // case q
+                case 81: // case Q
                     printf("STOP X WAS PRESSED\n");
                     fflush(stdout);
                     write(fdX, out_str, strlen(out_str)+1);
                     break;
 
-                case 101:
+                case 101: // case e
+                case 69: // case E
                     printf("STOP Z WAS PRESSED\n");
                     fflush(stdout);
                     write(fdZ, out_str, strlen(out_str)+1);
@@ -105,6 +119,7 @@ int main(int argc, char * argv[])
                     break;
             }
         }
+        // closes pipes
         close(fdZ);
         close(fdX);
     }

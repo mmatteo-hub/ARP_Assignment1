@@ -8,6 +8,7 @@
 
 #define BUFFSIZE 80
 
+// function to start the execution of the processes
 int spawn(const char * program, char ** arg_list) 
 {
   pid_t child_pid = fork();
@@ -26,11 +27,20 @@ int main()
   int fd;
   int fdp;
   int val;
+
+  // pipe communicating with the inspection console
   char * myfifo_inspection = "/tmp/fifo_inspection";
+
+  // pipe communicating with the command console
   char * myfifo_command = "/tmp/fifo_command";
+
+  // pipes communicating with motors
   char * myfifo_motorX = "/tmp/fifo_motX";
   char * myfifo_motorZ = "/tmp/fifo_motZ";
+
+  // pipe to pass pids of processes to the watchdog process
   char * myfifo_watchdog = "/tmp/fifo_watchdog";
+
   mkfifo(myfifo_inspection,0666);
   mkfifo(myfifo_command,0666);
   mkfifo(myfifo_motorX,0666);
@@ -44,11 +54,12 @@ int main()
   char format_string_multiple[80] = "%d,%d,%d,%d,%d";
   char format_string_mot[80] = "%d,%d";
 
+  // defining the arg_list_n parameters to let the following part of the prorgram execute and open the konsoles
   char * arg_list_1[] = { "/usr/bin/konsole",  "-e", "./commandconsole"};
   char * arg_list_2[] = { "/usr/bin/konsole",  "-e", "./inspectionconsole"}; 
   char * arg_list_3[] = { "/usr/bin/konsole",  "-e", "./motorX"};
   char * arg_list_4[] = { "/usr/bin/konsole",  "-e", "./motorZ"};
-  char * arg_list_5[] = { "/usr/bin/konsole" , "-e", "./watchdog"};
+  char * arg_list_5[] = { "/usr/bin/konsole",  "-e", "./watchdog"};
   
   // creation of 5 processes
   int pid1, pid2, pid3, pid4, pid5;
