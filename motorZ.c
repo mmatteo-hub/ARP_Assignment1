@@ -163,7 +163,10 @@ int main(int argc, char * argv[])
 
         // close pipes
         close(fd_z);
+        unlink(fifo_motZinsp);
         close(fd_insp);
+        unlink(fifo_inspmotZ);
         close(fd_val);
+        unlink(fifo_valZ);
     }
 }

@@ -39,12 +39,14 @@ int main(int argc, char * argv[])
     read(fdX, pid_motX, 80);
     sscanf(pid_motX, format_string, &pidX_got);
     close(fdX);
+    unlink(fifo_comm_motX);
 
     // takes the pid of motorZ and stores it into a variable
     fdZ = open(fifo_comm_motZ,O_RDONLY);
     read(fdX, pid_motZ, 80);
     sscanf(pid_motZ, format_string, &pidZ_got);
     close(fdZ);
+    unlink(fifo_comm_motZ);
     
     char ch1[80];
     char var;
@@ -121,6 +123,8 @@ int main(int argc, char * argv[])
         }
         // closes pipes
         close(fdZ);
+        unlink(fifo_valZ);
         close(fdX);
+        unlink(fifo_valX);
     }
 }
