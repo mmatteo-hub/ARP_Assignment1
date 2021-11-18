@@ -41,11 +41,13 @@ int main(int argc, char * argv[])
         fd_x_read = open(fifo_motXinsp, O_RDONLY);
         read(fd_x_read, input_string_x, 80);
         close(fd_x_read);
+        unlink(fifo_motXinsp);
 
         // using the pipe to read the position from motorZ
         fd_z_read = open(fifo_motZinsp, O_RDONLY);
         read(fd_z_read, input_string_z, 80);
         close(fd_z_read);
+        unlink(fifo_motZinsp);
 
         // opening the pipes comunicating with the motors to use them for passing reset and emergency commands
         fd_x_write = open(fifo_inspmotX, O_WRONLY);;
@@ -99,6 +101,8 @@ int main(int argc, char * argv[])
 
         // closing pipes
         close(fd_z_write);
+        unlink(fifo_inspmotZ);
         close(fd_x_write);
+        unlink(fifo_inspmotX);
     }
 }
