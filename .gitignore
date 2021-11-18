@@ -4,6 +4,7 @@ executor
 motorX
 motorZ
 inspectionconsole
+watchdog
 
 # Compiled source #
 ###################
