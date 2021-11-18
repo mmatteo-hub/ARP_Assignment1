@@ -23,42 +23,23 @@ int main(int argc, char * argv[])
 {
     t = time(NULL);
     signal(SIGUSR1,sig_handler);
-    int fd3;
-    int fdp;
-    int fdp2;
-    char * myfifo3 = "/tmp/fifo_ex";
-    char * myfifop = "/tmp/fifo_dog";
-    char * myfifop2 = "/tmp/fifo_dog2";
-    mkfifo(myfifo3,0666);
-    mkfifo(myfifop,0666);
-    mkfifo(myfifop2,0666);
+    int fd_exec;
+    char * myfifo_watchdog = "/tmp/fifo_watchdog";
+    mkfifo(myfifo_watchdog,0666);
 
-    char str3[80]; 
     char strp[80];
-    char strp2[80];
-    char format_string[80]="%d,%d";
-    char format_string_p[80] = "%d";
-    int pid1, pid2;
+    char format_string[80] = "%d,%d,%d,%d,%d";
+    int pid1, pid2, pid3, pid4, pid5;
 
-    fd3 = open(myfifo3,O_RDONLY); 
-    read(fd3, str3, 80); 
-    close(fd3);
-
-    fdp = open(myfifop,O_WRONLY);
-    sprintf(strp, format_string_p, (int)getpid());
-    write(fdp,strp, strlen(strp)+1);
-    close(fdp);
-
-    fdp2 = open(myfifop2,O_WRONLY);
-    sprintf(strp2, format_string_p, (int)getpid());
-    write(fdp2,strp2, strlen(strp2)+1);
-    close(fdp2);
-
-    sscanf(str3, format_string, &pid1, &pid2);
+    fd_exec = open(myfifo_watchdog,O_RDONLY); 
+    read(fd_exec, strp, 80); 
+    sscanf(strp, format_string, &pid1, &pid2, &pid3, &pid4, &pid5);
+    close(fd_exec);
+    unlink(myfifo_watchdog);
         
-    printf("Inside watch dog\n");
+    printf("Inside watchdog\n");
     fflush(stdout);
-    printf("The two PIDs are: (PID_1 = %d)= and (PID_2 = %d)\n", pid1,  pid2); 
+    printf("PIDs are:\n(PID_1 = %d)\n(PID_2 = %d)\n(PID_3 = %d)\n(PID_4 = %d)\n(PID_5 = %d)\n", pid1,  pid2, pid3, pid4, pid5); 
     fflush(stdout);
     
     while(1)
@@ -68,8 +49,21 @@ int main(int argc, char * argv[])
             kill(pid1,SIGKILL);
             printf("Process with (PID = %d) killed\n",pid1);
             fflush(stdout);
+            sleep(2);
             kill(pid2,SIGKILL);
             printf("Process with (PID = %d) killed\n",pid2);
+            fflush(stdout);
+            sleep(2);
+            kill(pid3,SIGKILL);
+            printf("Process with (PID = %d) killed\n",pid3);
+            fflush(stdout);
+            sleep(2);
+            kill(pid4,SIGKILL);
+            printf("Process with (PID = %d) killed\n",pid4);
+            fflush(stdout);
+            sleep(2);
+            kill(pid5,SIGKILL);
+            printf("Process with (PID = %d) killed\n",pid5);
             fflush(stdout);
             sleep(2);
             printf("I'll terminate watch dog process, (PID = %d), in 5 secs\n",(int)getpid());

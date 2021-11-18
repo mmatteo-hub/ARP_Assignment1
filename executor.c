@@ -51,8 +51,7 @@ int main()
   char outup_string[80];
   char motor_pids_string[80];
   char out_str[80];
-  char format_string_multiple[80] = "%d,%d,%d,%d,%d";
-  char format_string_mot[80] = "%d,%d";
+  char format_string[80] = "%d,%d,%d,%d,%d";
 
   // defining the arg_list_n parameters to let the following part of the prorgram execute and open the konsoles
   char * arg_list_1[] = { "/usr/bin/konsole",  "-e", "./commandconsole"};
@@ -84,7 +83,7 @@ int main()
   fflush(stdout);
 
   // saving all 5 processes' pids
-  sprintf(outup_string, format_string_multiple, pid1, pid2, pid3, pid4, pid5);
+  sprintf(outup_string, format_string, pid1, pid2, pid3, pid4, pid5);
 
   // passing pids to watch dog through pipe
   fd = open(myfifo_watchdog, O_WRONLY);
