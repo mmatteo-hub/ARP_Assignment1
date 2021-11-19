@@ -47,29 +47,25 @@ int main(int argc, char * argv[])
         if(difftime(time(NULL),t) > 15)
         {
             kill(pid1,SIGKILL);
-            printf("Process with (PID = %d) killed\n",pid1);
+            printf("Process with (PID = %d) killed\n", pid1);
             fflush(stdout);
-            sleep(2);
+            sleep(1);
             kill(pid2,SIGKILL);
-            printf("Process with (PID = %d) killed\n",pid2);
+            printf("Process with (PID = %d) killed\n", pid2);
             fflush(stdout);
-            sleep(2);
+            sleep(1);
             kill(pid3,SIGKILL);
-            printf("Process with (PID = %d) killed\n",pid3);
+            printf("Process with (PID = %d) killed\n", pid3);
             fflush(stdout);
-            sleep(2);
+            sleep(1);
             kill(pid4,SIGKILL);
-            printf("Process with (PID = %d) killed\n",pid4);
+            printf("Process with (PID = %d) killed\n", pid4);
             fflush(stdout);
-            sleep(2);
-            kill(pid5,SIGKILL);
-            printf("Process with (PID = %d) killed\n",pid5);
-            fflush(stdout);
-            sleep(2);
-            printf("I'll terminate watch dog process, (PID = %d), in 5 secs\n",(int)getpid());
+            sleep(1);
+            printf("I'll terminate watchdog process, (PID = %d), in 5 seconds\n", pid5);
             fflush(stdout);
             sleep(5);
-            exit(0);
+            kill(pid5,SIGKILL);
         }
     }
 }
