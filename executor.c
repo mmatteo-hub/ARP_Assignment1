@@ -28,6 +28,8 @@ int main()
   int fdp;
   int val;
 
+  pid_t child_pid;
+
   // pipe communicating with the inspection console
   char * myfifo_inspection = "/tmp/fifo_inspection";
 
@@ -62,23 +64,52 @@ int main()
   
   // creation of 5 processes
   int pid1, pid2, pid3, pid4, pid5;
-  pid1 = spawn("/usr/bin/konsole", arg_list_1);
+  
+  child_pid = fork();
+  if (child_pid == -1) perror("fork failed");
+  if (child_pid != 0) pid1 = child_pid;
+  else
+  {
+    if ( execl ("/usr/bin/konsole", "/usr/bin/konsole", "--hold",  "-e", "/bin/ls","-lR", "/", (char*) NULL) == -1) perror("exec failed");
+	exit(1);
+  }
   printf("1st konsole (PID = %d)\n", pid1);
   fflush(stdout);
   
-  pid2 = spawn("/usr/bin/konsole", arg_list_2);
+  child_pid = fork();
+  if (child_pid == -1) perror("fork failed");
+  if (child_pid != 0) pid2 = child_pid;
+  else
+  {
+    if ( execl ("/usr/bin/konsole", "/usr/bin/konsole", "--hold",  "-e", "/usr//bin/top", (char*) NULL) == -1) perror("exec failed");
+  exit(1);
+  }
   printf("2nd konsole (PID = %d)\n", pid2);
   fflush(stdout);
 
-  pid3 = spawn("/usr/bin/konsole", arg_list_3);
+  child_pid = fork();
+  if (child_pid == -1) perror("fork failed");
+  if (child_pid != 0) pid3 = child_pid;
+  else
+  {
+    if ( execl ("/usr/bin/konsole","/usr/bin/konsole",  "--hold", "-e", "/bin/ping", "8.8.8.8", (char*) NULL) == -1) perror("exec failed");
+  exit(1);
+  }
   printf("3rd konsole (PID = %d)\n", pid3);
   fflush(stdout);
 
-  pid4 = spawn("/usr/bin/konsole", arg_list_4);
+  child_pid = fork();
+  if (child_pid == -1) perror("fork failed");
+  if (child_pid != 0) pid4 = child_pid;
+  else
+  {
+    if ( execl ("/usr/bin/konsole","/usr/bin/konsole",  "--hold", "-e", "/bin/ping", "8.8.8.8", (char*) NULL) == -1) perror("exec failed");
+  exit(1);
+  }
   printf("4th konsole (PID = %d)\n", pid4);
   fflush(stdout);
 
-  pid5 = spawn("/usr/bin/konsole", arg_list_5);
+  //pid5 = spawn("/usr/bin/konsole", arg_list_5);
   printf("5th konsole (PID = %d)\n", pid5);
   fflush(stdout);
 
