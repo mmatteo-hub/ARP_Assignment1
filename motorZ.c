@@ -8,7 +8,17 @@
 #include <signal.h>
 #include <sys/select.h>
 
+// maximum err
+#define delta 0.25
+
 float z_position = 0; // motorX positiion
+
+int sign(void)
+{
+    int n = rand() % 100;
+    if(floor(n) > 49 ) return 1;
+    else return 0;
+}
 
 int main(int argc, char * argv[])
 {
@@ -53,6 +63,11 @@ int main(int argc, char * argv[])
 
     while(1)
     {
+        // compute the error
+        err = (rand() % 1)/4;
+        // compute the sign
+        int s = sign();
+
         // open pipes
         int fd_val = open(fifo_valZ, O_RDONLY);
         int fd_insp = open(fifo_inspmotZ, O_RDONLY);
@@ -85,10 +100,20 @@ int main(int argc, char * argv[])
                     case 90: // case Z
                         if(z_position > 0)
                         {
-                            z_position -= 0.25;
-                            sprintf(passVal,format_string,z_position);
-                            write(fd_z,passVal,strlen(passVal)+1);
-                            sleep(1);
+                            if(s)
+                            {
+                                z_position -= 0.25;
+                                sprintf(passVal,format_string,z_position+err);
+                                write(fd_z,passVal,strlen(passVal)+1);
+                                sleep(1);
+                            }
+                            else
+                            {
+                                z_position -= 0.25;
+                                sprintf(passVal,format_string,z_position-err);
+                                write(fd_z,passVal,strlen(passVal)+1);
+                                sleep(1);
+                            }
                         }
                         else
                         {
@@ -102,11 +127,20 @@ int main(int argc, char * argv[])
                     case 87: // case W
                         if(z_position < 20)
                         {
-                            z_position += 0.25;
-                            sprintf(passVal,format_string,z_position);
-                            write(fd_z,passVal,strlen(passVal)+1);
-                            sleep(1);
-                        }
+                            if(s)
+                            {
+                                z_position += 0.25;
+                                sprintf(passVal,format_string,z_position+err);
+                                write(fd_z,passVal,strlen(passVal)+1);
+                                sleep(1);
+                            }
+                            else
+                            {
+                                z_position += 0.25;
+                                sprintf(passVal,format_string,z_position-err);
+                                write(fd_z,passVal,strlen(passVal)+1);
+                                sleep(1);
+                            }
                         else
                         {
                             printf("Z cannot be increased any more\n");
