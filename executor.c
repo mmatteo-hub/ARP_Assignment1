@@ -54,13 +54,6 @@ int main()
   char motor_pids_string[80];
   char out_str[80];
   char format_string[80] = "%d,%d,%d,%d,%d";
-
-  // defining the arg_list_n parameters to let the following part of the prorgram execute and open the konsoles
-  char * arg_list_1[] = { "/usr/bin/konsole",  "-e", "./commandconsole"};
-  char * arg_list_2[] = { "/usr/bin/konsole",  "-e", "./inspectionconsole"}; 
-  char * arg_list_3[] = { "/usr/bin/konsole",  "-e", "./motorX"};
-  char * arg_list_4[] = { "/usr/bin/konsole",  "-e", "./motorZ"};
-  char * arg_list_5[] = { "/usr/bin/konsole",  "-e", "./watchdog"};
   
   // creation of 5 processes
   int pid1, pid2, pid3, pid4, pid5;

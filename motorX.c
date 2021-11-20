@@ -7,8 +7,20 @@
 #include <stdlib.h>
 #include <signal.h>
 #include <sys/select.h>
+#include <math.h>
+
+#define delta 0.25
 
 float x_position = 0; // motorX positiion
+float err; // error in motorX position
+
+int sign(void)
+{
+    int n = rand() % 100;
+    if(floor(n) > 49 ) return 1;
+    else return 0;
+}
+
 
 int main(int argc, char * argv[])
 {
@@ -52,6 +64,11 @@ int main(int argc, char * argv[])
 
     while(1)
     {
+        // compute the error
+        err = (rand() % 1)/4;
+        // compute the sign
+        int s = sign();
+
         // open pipes
         int fd_val = open(fifo_valX, O_RDONLY);
         int fd_insp = open(fifo_inspmotX, O_RDONLY);
@@ -84,10 +101,20 @@ int main(int argc, char * argv[])
                     case 65: // case A
                         if(x_position > 0)
                         {
-                            x_position -= 0.25;
-                            sprintf(passVal,format_string,x_position);
-                            write(fd_x,passVal,strlen(passVal)+1);
-                            sleep(1);
+                            if(s)
+                            {
+                                x_position -= 0.25;
+                                sprintf(passVal,format_string,x_position+err);
+                                write(fd_x,passVal,strlen(passVal)+1);
+                                sleep(1);
+                            }
+                            else if(!s)
+                            {
+                                x_position -= 0.25;
+                                sprintf(passVal,format_string,x_position-err);
+                                write(fd_x,passVal,strlen(passVal)+1);
+                                sleep(1);
+                            }
                         }
                         else
                         {
@@ -101,10 +128,20 @@ int main(int argc, char * argv[])
                     case 68: // case D
                         if(x_position < 20)
                         {
-                            x_position += 0.25;
-                            sprintf(passVal,format_string,x_position);
-                            write(fd_x,passVal,strlen(passVal)+1);
-                            sleep(1);
+                            if(s)
+                            {
+                                x_position += 0.25;
+                                sprintf(passVal,format_string,x_position+err);
+                                write(fd_x,passVal,strlen(passVal)+1);
+                                sleep(1);
+                            }
+                            else if(!s)
+                            {
+                                x_position += 0.25;
+                                sprintf(passVal,format_string,x_position-err);
+                                write(fd_x,passVal,strlen(passVal)+1);
+                                sleep(1);
+                            }
                         }
                         else
                         {
