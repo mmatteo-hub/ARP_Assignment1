@@ -9,6 +9,7 @@
 #include <sys/select.h>
 #include <math.h>
 
+// maximum err
 #define delta 0.25
 
 float x_position = 0; // motorX positiion
