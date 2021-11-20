@@ -58,6 +58,7 @@ int main()
   // creation of 5 processes
   int pid1, pid2, pid3, pid4, pid5;
   
+  // execl with the params for the konsoles
   child_pid = fork();
   if (child_pid == -1) perror("fork failed");
   if (child_pid != 0) pid1 = child_pid;
