@@ -100,19 +100,19 @@ int main(int argc, char * argv[])
                     // left
                     case 97: // case a
                     case 65: // case A
-                        if(x_position > 0)
+                        if(x_position - err > 0)
                         {
                             if(s)
                             {
-                                x_position -= 0.25;
-                                sprintf(passVal,format_string,x_position+err);
+                                x_position -= (delta+err);
+                                sprintf(passVal,format_string,x_position);
                                 write(fd_x,passVal,strlen(passVal)+1);
                                 sleep(1);
                             }
                             else if(!s)
                             {
-                                x_position -= 0.25;
-                                sprintf(passVal,format_string,x_position-err);
+                                x_position -= (delta-err);
+                                sprintf(passVal,format_string,x_position);
                                 write(fd_x,passVal,strlen(passVal)+1);
                                 sleep(1);
                             }
@@ -131,15 +131,15 @@ int main(int argc, char * argv[])
                         {
                             if(s)
                             {
-                                x_position += 0.25;
-                                sprintf(passVal,format_string,x_position+err);
+                                x_position += (delta+err);
+                                sprintf(passVal,format_string,x_position);
                                 write(fd_x,passVal,strlen(passVal)+1);
                                 sleep(1);
                             }
                             else if(!s)
                             {
-                                x_position += 0.25;
-                                sprintf(passVal,format_string,x_position-err);
+                                x_position += (delta-err);
+                                sprintf(passVal,format_string,x_position);
                                 write(fd_x,passVal,strlen(passVal)+1);
                                 sleep(1);
                             }

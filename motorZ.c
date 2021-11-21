@@ -102,15 +102,15 @@ int main(int argc, char * argv[])
                         {
                             if(s)
                             {
-                                z_position -= 0.25;
-                                sprintf(passVal,format_string,z_position+err);
+                                z_position -= (delta+err);
+                                sprintf(passVal,format_string,z_position);
                                 write(fd_z,passVal,strlen(passVal)+1);
                                 sleep(1);
                             }
                             else
                             {
-                                z_position -= 0.25;
-                                sprintf(passVal,format_string,z_position-err);
+                                z_position -= (delta-err);
+                                sprintf(passVal,format_string,z_position);
                                 write(fd_z,passVal,strlen(passVal)+1);
                                 sleep(1);
                             }
@@ -129,15 +129,15 @@ int main(int argc, char * argv[])
                         {
                             if(s)
                             {
-                                z_position += 0.25;
-                                sprintf(passVal,format_string,z_position+err);
+                                z_position += (delta+err);
+                                sprintf(passVal,format_string,z_position);
                                 write(fd_z,passVal,strlen(passVal)+1);
                                 sleep(1);
                             }
                             else
                             {
-                                z_position += 0.25;
-                                sprintf(passVal,format_string,z_position-err);
+                                z_position += (delta-err);
+                                sprintf(passVal,format_string,z_position);
                                 write(fd_z,passVal,strlen(passVal)+1);
                                 sleep(1);
                             }
