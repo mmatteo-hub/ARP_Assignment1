@@ -35,12 +35,16 @@ int main(int argc, char * argv[])
     char * fifo_motXinsp = "/tmp/motX_insp";
 
     // pipe to read commands from the inspection console
-    char * fifo_inspmotX = "/tmp/insp_motX";
+    //char * fifo_inspmotX = "/tmp/insp_motX";
+
+    // pipe from watchdog to motX
+    char * watchdog_motX = "/tmp/watchdog_motX";
     
     mkfifo(fifo_mot_commX,0666);
     mkfifo(fifo_valX,0666);
     mkfifo(fifo_motXinsp,0666);
-    mkfifo(fifo_inspmotX,0666);
+    //mkfifo(fifo_inspmotX,0666);
+    mkfifo(watchdog_motX,0666);
 
     // send the process pid via pipe to the command console
     char pid_string[80];
@@ -66,19 +70,25 @@ int main(int argc, char * argv[])
     while(1)
     {
         // compute the error
-        err = (rand() % 1)/4;
+        float err = (rand() % 1)/4;
         // compute the sign
         int s = sign();
-
+        printf("before\n");
+        fflush(stdout);
         // open pipes
         int fd_val = open(fifo_valX, O_RDONLY);
-        int fd_insp = open(fifo_inspmotX, O_RDONLY);
+        printf("after1\n");
+        fflush(stdout);
+        //int fd_insp = open(fifo_inspmotX, O_RDONLY);
+        printf("after2\n");
+        fflush(stdout);
         int fd_x = open(fifo_motXinsp, O_WRONLY);
-
+        printf("after\n");
+        fflush(stdout);
         // initialise the set and add the file descriptors of the pipe to detect
         FD_ZERO(&rfds);
         FD_SET(fd_val,&rfds);
-        FD_SET(fd_insp,&rfds);
+        //FD_SET(fd_insp,&rfds);
 
         // setting the time select has to wait for
         tv.tv_sec = 0;
@@ -129,6 +139,8 @@ int main(int argc, char * argv[])
                     case 68: // case D
                         if(x_position < 20)
                         {
+                            printf("here\n");
+                            fflush(stdout);
                             if(s)
                             {
                                 x_position += (delta+err);
@@ -192,18 +204,18 @@ int main(int argc, char * argv[])
                 {
                     read(fd_val, input_string_comm, 80);
                 }
-                if(FD_ISSET(fd_insp,&rfds))
+                /*if(FD_ISSET(fd_insp,&rfds))
                 {
                     read(fd_insp, input_string_insp, 80);
-                }
+                }*/
                 break;
         }
 
         // close pipes
         close(fd_x);
         unlink(fifo_motXinsp);
-        close(fd_insp);
-        unlink(fifo_inspmotX);
+        //close(fd_insp);
+        //unlink(fifo_inspmotX);
         close(fd_val);
         unlink(fifo_valX);
     }

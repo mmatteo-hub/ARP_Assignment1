@@ -37,6 +37,7 @@ int main(int argc, char * argv[])
 
     while(1)
     {
+        
         // using the pipe to read the position from motorX
         fd_x_read = open(fifo_motXinsp, O_RDONLY);
         read(fd_x_read, input_string_x, 80);
@@ -48,15 +49,15 @@ int main(int argc, char * argv[])
         read(fd_z_read, input_string_z, 80);
         close(fd_z_read);
         unlink(fifo_motZinsp);
-
+/*
         // opening the pipes comunicating with the motors to use them for passing reset and emergency commands
-        fd_x_write = open(fifo_inspmotX, O_WRONLY);;
+        fd_x_write = open(fifo_inspmotX, O_WRONLY);
         fd_z_write = open(fifo_inspmotZ, O_WRONLY);
-
+*/       
         // printing the position got from motors
         printf("X = %s\nZ = %s\n", input_string_x, input_string_z);
         fflush(stdout);
-
+/*
         // printing the menu for choosing the option to pass to motors
         printf("PRESS: \n s to STOP both motors for an emergency\n r to RESET both motors\n");
         fflush(stdout);
@@ -104,5 +105,6 @@ int main(int argc, char * argv[])
         unlink(fifo_inspmotZ);
         close(fd_x_write);
         unlink(fifo_inspmotX);
+        */
     }
 }

@@ -43,7 +43,7 @@ int main(int argc, char * argv[])
 
     // takes the pid of motorZ and stores it into a variable
     fdZ = open(fifo_comm_motZ,O_RDONLY);
-    read(fdX, pid_motZ, 80);
+    read(fdZ, pid_motZ, 80);
     sscanf(pid_motZ, format_string, &pidZ_got);
     close(fdZ);
     unlink(fifo_comm_motZ);
@@ -54,8 +54,8 @@ int main(int argc, char * argv[])
     while(1)
     {
         // opens pipe to write the command inserted by the user
-        fdX = open(fifo_valX, O_WRONLY);
-        fdZ = open(fifo_valZ, O_WRONLY);
+        int fdX_write = open(fifo_valX, O_WRONLY);
+        int fdZ_write = open(fifo_valZ, O_WRONLY);
         printf("PRESS: \n w to go UP\n z to go DOWN\n d to go RIGHT\n a to go LEFT\n\n q to STOP X\n e to STOP Z\n");
         fflush(stdout);
         scanf("%s",ch1);
@@ -77,14 +77,14 @@ int main(int argc, char * argv[])
                 case 87: // case W
                     printf("UP WAS PRESSED\n");
                     fflush(stdout);
-                    write(fdZ, out_str, strlen(out_str)+1);
+                    write(fdZ_write, out_str, strlen(out_str)+1);
                     break;
 
                 case 122 :// case z
                 case 90: // case Z
                     printf("DOWN WAS PRESSED\n");
                     fflush(stdout);
-                    write(fdZ, out_str, strlen(out_str)+1);
+                    write(fdZ_write, out_str, strlen(out_str)+1);
                     break;
                     
                 case 97: // case a
@@ -98,21 +98,23 @@ int main(int argc, char * argv[])
                 case 68: // case D
                     printf("RIGHT WAS PRESSED\n");
                     fflush(stdout);
-                    write(fdX, out_str, strlen(out_str)+1);
+                    write(fdX_write, out_str, strlen(out_str)+1);
+                    printf("here comm\n");
+                    fflush(stdout);
                     break;
 
                 case 113: // case q
                 case 81: // case Q
                     printf("STOP X WAS PRESSED\n");
                     fflush(stdout);
-                    write(fdX, out_str, strlen(out_str)+1);
+                    write(fdX_write, out_str, strlen(out_str)+1);
                     break;
 
                 case 101: // case e
                 case 69: // case E
                     printf("STOP Z WAS PRESSED\n");
                     fflush(stdout);
-                    write(fdZ, out_str, strlen(out_str)+1);
+                    write(fdZ_write, out_str, strlen(out_str)+1);
                     break;
 
                 default:
@@ -122,9 +124,9 @@ int main(int argc, char * argv[])
             }
         }
         // closes pipes
-        close(fdZ);
+        close(fdZ_write);
         unlink(fifo_valZ);
-        close(fdX);
+        close(fdX_write);
         unlink(fifo_valX);
     }
 }

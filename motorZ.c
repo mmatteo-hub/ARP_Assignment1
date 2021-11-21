@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <signal.h>
 #include <sys/select.h>
+#include <math.h>
 
 // maximum err
 #define delta 0.25
@@ -32,12 +33,16 @@ int main(int argc, char * argv[])
     char * fifo_motZinsp = "/tmp/motZ_insp";
 
     // pipe to read commands from the inspection console
-    char * fifo_inspmotZ = "/tmp/insp_motZ";
+    //char * fifo_inspmotZ = "/tmp/insp_motZ";
+
+    // pipe from watchdog to motZ
+    char * watchdog_motZ = "/tmp/watchdog_motZ";
 
     mkfifo(fifo_mot_commZ,0666);
     mkfifo(fifo_valZ,0666);
     mkfifo(fifo_motZinsp,0666);
-    mkfifo(fifo_inspmotZ,0666);
+    //mkfifo(fifo_inspmotZ,0666);
+    mkfifo(watchdog_motZ,0666);
 
     // send the process pid via pipe to the command console
     char pid_string[80];
@@ -64,19 +69,19 @@ int main(int argc, char * argv[])
     while(1)
     {
         // compute the error
-        err = (rand() % 1)/4;
+        float err = (rand() % 1)/4;
         // compute the sign
         int s = sign();
 
         // open pipes
         int fd_val = open(fifo_valZ, O_RDONLY);
-        int fd_insp = open(fifo_inspmotZ, O_RDONLY);
+        //int fd_insp = open(fifo_inspmotZ, O_RDONLY);
         int fd_z = open(fifo_motZinsp, O_WRONLY);
 
         // initialise the set and add the file descriptors of the pipe to detect
         FD_ZERO(&rfds);
         FD_SET(fd_val,&rfds);
-        FD_SET(fd_insp,&rfds);
+        //FD_SET(fd_insp,&rfds);
 
         // setting the time select has to wait for
         tv.tv_sec = 0;
@@ -141,6 +146,7 @@ int main(int argc, char * argv[])
                                 write(fd_z,passVal,strlen(passVal)+1);
                                 sleep(1);
                             }
+                        }
                         else
                         {
                             printf("Z cannot be increased any more\n");
@@ -166,6 +172,8 @@ int main(int argc, char * argv[])
                     case 114: // case r
                     case 82: // case R
                         z_position = 0;
+                        sprintf(passVal,format_string,z_position);
+                        write(fd_z,passVal,strlen(passVal)+1);
                         sleep(1);
                         break;
 
@@ -188,18 +196,18 @@ int main(int argc, char * argv[])
                 {
                     read(fd_val, input_string_comm, 80);
                 }
-                if(FD_ISSET(fd_insp,&rfds))
+                /*if(FD_ISSET(fd_insp,&rfds))
                 {
                     read(fd_insp, input_string_insp, 80);
-                }
+                }*/
                 break;
         }
 
         // close pipes
         close(fd_z);
         unlink(fifo_motZinsp);
-        close(fd_insp);
-        unlink(fifo_inspmotZ);
+        //close(fd_insp);
+        //unlink(fifo_inspmotZ);
         close(fd_val);
         unlink(fifo_valZ);
     }

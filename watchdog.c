@@ -10,6 +10,8 @@
 
 time_t t;
 
+float x_position, z_position;
+
 void sig_handler(int signo)
 {
     if (signo == SIGUSR1)
@@ -25,9 +27,14 @@ int main(int argc, char * argv[])
     signal(SIGUSR1,sig_handler);
     int fd_exec;
     char * myfifo_watchdog = "/tmp/fifo_watchdog";
+    char * watchdog_motX = "/tmp/watchdog_motX";
+    char * watchdog_motZ= "/tmp/watchdog_motZ";
     mkfifo(myfifo_watchdog,0666);
+    mkfifo(watchdog_motX,0666);
+    mkfifo(watchdog_motZ,0666);
 
     char strp[80];
+    char passVal[80];
     char format_string[80] = "%d,%d,%d,%d,%d";
     int pid1, pid2, pid3, pid4, pid5;
 
@@ -44,7 +51,26 @@ int main(int argc, char * argv[])
     
     while(1)
     {
-        if(difftime(time(NULL),t) > 15)
+        /*if(difftime(time(NULL),t) > 15)
+        {
+            printf("Resetting ... by watchdog\n");
+            fflush(stdout);
+
+            int fdX = open(watchdog_motX, O_WRONLY);
+            int fdZ = open(watchdog_motZ, O_WRONLY);
+            x_position = 0;
+            z_position = 0;
+            sprintf(passVal,format_string,x_position);
+            write(fdX,passVal,strlen(passVal)+1);
+            sprintf(passVal,format_string,z_position);
+            write(fdZ,passVal,strlen(passVal)+1);
+            close(fdZ);
+            unlink(watchdog_motZ);
+            close(fdX);
+            unlink(watchdog_motX);
+        }*/
+
+        if(difftime(time(NULL),t) > 60)
         {
             kill(pid1,SIGKILL);
             printf("Process with (PID = %d) killed\n", pid1);
