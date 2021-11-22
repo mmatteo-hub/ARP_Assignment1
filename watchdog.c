@@ -70,7 +70,7 @@ int main(int argc, char * argv[])
             unlink(watchdog_motX);
         }*/
 
-        if(difftime(time(NULL),t) > 60)
+        if(difftime(time(NULL),t) > 1000)
         {
             kill(pid1,SIGKILL);
             printf("Process with (PID = %d) killed\n", pid1);

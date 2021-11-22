@@ -91,7 +91,7 @@ int main(int argc, char * argv[])
                 case 65: // case A
                     printf("LEFT WAS PRESSED\n");
                     fflush(stdout);
-                    write(fdX, out_str, strlen(out_str)+1);
+                    write(fdX_write, out_str, strlen(out_str)+1);
                     break;
 
                 case 100: // case d
@@ -99,8 +99,6 @@ int main(int argc, char * argv[])
                     printf("RIGHT WAS PRESSED\n");
                     fflush(stdout);
                     write(fdX_write, out_str, strlen(out_str)+1);
-                    printf("here comm\n");
-                    fflush(stdout);
                     break;
 
                 case 113: // case q
@@ -125,8 +123,8 @@ int main(int argc, char * argv[])
         }
         // closes pipes
         close(fdZ_write);
-        unlink(fifo_valZ);
         close(fdX_write);
-        unlink(fifo_valX);
     }
+    unlink(fifo_valZ);
+    unlink(fifo_valX);
 }

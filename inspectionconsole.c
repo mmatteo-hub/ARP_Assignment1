@@ -33,78 +33,98 @@ int main(int argc, char * argv[])
     mkfifo(fifo_motZinsp, 0666);
 
     char ch1[80];
+    char out_str[80];
     char var;
+    fd_set rfds;
+    struct timeval tv;
+    int retval;
+    int fd_stdin;
 
     while(1)
     {
-        
-        // using the pipe to read the position from motorX
-        fd_x_read = open(fifo_motXinsp, O_RDONLY);
-        read(fd_x_read, input_string_x, 80);
-        close(fd_x_read);
-        unlink(fifo_motXinsp);
-
-        // using the pipe to read the position from motorZ
-        fd_z_read = open(fifo_motZinsp, O_RDONLY);
-        read(fd_z_read, input_string_z, 80);
-        close(fd_z_read);
-        unlink(fifo_motZinsp);
-/*
         // opening the pipes comunicating with the motors to use them for passing reset and emergency commands
-        fd_x_write = open(fifo_inspmotX, O_WRONLY);
-        fd_z_write = open(fifo_inspmotZ, O_WRONLY);
-*/       
-        // printing the position got from motors
-        printf("X = %s\nZ = %s\n", input_string_x, input_string_z);
-        fflush(stdout);
-/*
-        // printing the menu for choosing the option to pass to motors
+        fd_x_write = open(fifo_inspmotX, O_WRONLY | O_NONBLOCK);
+        fd_z_write = open(fifo_inspmotZ, O_WRONLY | O_NONBLOCK);
+
+        // using the pipe to read the position from motorX
+        fd_x_read = open(fifo_motXinsp, O_RDONLY | O_NONBLOCK);
+        read(fd_x_read, input_string_x, 80);
+        // using the pipe to read the position from motorZ
+        fd_z_read = open(fifo_motZinsp, O_RDONLY | O_NONBLOCK);
+        read(fd_z_read, input_string_z, 80);
+       
+        // initialise the set and add the file descriptors of the pipe to detect
+        FD_ZERO(&rfds);
+        FD_SET(fd_x_write,&rfds);
+        FD_SET(fd_z_write,&rfds);
+        FD_SET(fd_x_read,&rfds);
+        FD_SET(fd_z_read,&rfds);
+
+        // setting the time select has to wait for
+        tv.tv_sec = 0;
+        tv.tv_usec = 0;
+
         printf("PRESS: \n s to STOP both motors for an emergency\n r to RESET both motors\n");
         fflush(stdout);
-        scanf("%s", ch1);
 
-        if(strlen(ch1) != 1)
+        // calling the select to detect changes in the pipes
+        retval = select(fd_stdin+1,&rfds,NULL,NULL,&tv);
+
+        switch(retval)
         {
-            printf("Wrong input. Input has to be 1 character only!\n");
-            fflush(stdout);
-        }
+            case -1: // select error
+                perror("select()");
+                fflush(stdout);
+                break;
 
-        else
-        {
-            char out_str[80];
-            sprintf(out_str, format_string, ch1[0]); // prints the char according to a format string
-            var = ch1[0];
-            switch(var)
-            {
-                // reset
-                case 114: // case r
-                case 82: // case R
-                    printf("RESET WAS PRESSED\n");
-                    fflush(stdout);
-                    write(fd_x_write, out_str, strlen(out_str)+1);
-                    write(fd_z_write, out_str, strlen(out_str)+1);
-                    break;
+            case 0:
+                // printing the position got from motors
+                sleep(2);
+                printf("X = %s\nZ = %s\n", input_string_x, input_string_z);
+                fflush(stdout);
+                break;
 
-                // emergency stop
-                case 115: // case s
-                case 83: // case S
-                    printf("EMERGENCY STOP WAS PRESSED\n");
-                    fflush(stdout);
-                    write(fd_x_write, out_str, strlen(out_str)+1);
-                    write(fd_z_write, out_str, strlen(out_str)+1);
+            default:
+                ch1[0] = read(fd_stdin,out_str,80);
+                {
+                    //sprintf(out_str, format_string, ch1[0]); // prints the char according to a format string
+                    var = ch1[0];
+                    switch(var)
+                    {
+                        // reset
+                        case 114: // case r
+                        case 82: // case R
+                            printf("RESET WAS PRESSED\n");
+                            fflush(stdout);
+                            write(fd_x_write, out_str, strlen(out_str)+1);
+                            write(fd_z_write, out_str, strlen(out_str)+1);
+                            break;
 
-                default:
-                    printf("Wrong input, key pressed: %c\n", var);
-                    fflush(stdout);
-                    break;
-            }
+                        // emergency stop
+                        case 115: // case s
+                        case 83: // case S
+                            printf("EMERGENCY STOP WAS PRESSED\n");
+                            fflush(stdout);
+                            write(fd_x_write, out_str, strlen(out_str)+1);
+                            write(fd_z_write, out_str, strlen(out_str)+1);
+
+                        default:
+                            printf("Wrong input, key pressed: %c\n", var);
+                            fflush(stdout);
+                            break;
+                    }
+                }
+                break;
         }
 
         // closing pipes
         close(fd_z_write);
-        unlink(fifo_inspmotZ);
         close(fd_x_write);
-        unlink(fifo_inspmotX);
-        */
+        close(fd_z_read);
+        close(fd_x_read);
     }
+    unlink(fifo_motXinsp);
+    unlink(fifo_motZinsp);
+    unlink(fifo_inspmotZ);
+    unlink(fifo_inspmotX);
 }

@@ -33,7 +33,7 @@ int main(int argc, char * argv[])
     char * fifo_motZinsp = "/tmp/motZ_insp";
 
     // pipe to read commands from the inspection console
-    //char * fifo_inspmotZ = "/tmp/insp_motZ";
+    char * fifo_inspmotZ = "/tmp/insp_motZ";
 
     // pipe from watchdog to motZ
     char * watchdog_motZ = "/tmp/watchdog_motZ";
@@ -75,7 +75,7 @@ int main(int argc, char * argv[])
 
         // open pipes
         int fd_val = open(fifo_valZ, O_RDONLY);
-        //int fd_insp = open(fifo_inspmotZ, O_RDONLY);
+        int fd_insp = open(fifo_inspmotZ, O_RDONLY);
         int fd_z = open(fifo_motZinsp, O_WRONLY);
 
         // initialise the set and add the file descriptors of the pipe to detect
@@ -108,6 +108,8 @@ int main(int argc, char * argv[])
                             if(s)
                             {
                                 z_position -= (delta+err);
+                                printf("Z = %f\n",z_position);
+                                fflush(stdout);
                                 sprintf(passVal,format_string,z_position);
                                 write(fd_z,passVal,strlen(passVal)+1);
                                 sleep(1);
@@ -115,6 +117,8 @@ int main(int argc, char * argv[])
                             else
                             {
                                 z_position -= (delta-err);
+                                printf("Z = %f\n",z_position);
+                                fflush(stdout);
                                 sprintf(passVal,format_string,z_position);
                                 write(fd_z,passVal,strlen(passVal)+1);
                                 sleep(1);
@@ -135,6 +139,8 @@ int main(int argc, char * argv[])
                             if(s)
                             {
                                 z_position += (delta+err);
+                                printf("Z = %f\n",z_position);
+                                fflush(stdout);
                                 sprintf(passVal,format_string,z_position);
                                 write(fd_z,passVal,strlen(passVal)+1);
                                 sleep(1);
@@ -142,6 +148,8 @@ int main(int argc, char * argv[])
                             else
                             {
                                 z_position += (delta-err);
+                                printf("Z = %f\n",z_position);
+                                fflush(stdout);
                                 sprintf(passVal,format_string,z_position);
                                 write(fd_z,passVal,strlen(passVal)+1);
                                 sleep(1);
@@ -172,6 +180,8 @@ int main(int argc, char * argv[])
                     case 114: // case r
                     case 82: // case R
                         z_position = 0;
+                        printf("Z = %f\n",z_position);
+                        fflush(stdout);
                         sprintf(passVal,format_string,z_position);
                         write(fd_z,passVal,strlen(passVal)+1);
                         sleep(1);
@@ -196,19 +206,19 @@ int main(int argc, char * argv[])
                 {
                     read(fd_val, input_string_comm, 80);
                 }
-                /*if(FD_ISSET(fd_insp,&rfds))
+                if(FD_ISSET(fd_insp,&rfds))
                 {
                     read(fd_insp, input_string_insp, 80);
-                }*/
+                }
                 break;
         }
 
         // close pipes
         close(fd_z);
-        unlink(fifo_motZinsp);
-        //close(fd_insp);
-        //unlink(fifo_inspmotZ);
+        close(fd_insp);
         close(fd_val);
-        unlink(fifo_valZ);
     }
+    unlink(fifo_motZinsp);
+    unlink(fifo_inspmotZ);
+    unlink(fifo_valZ);
 }
