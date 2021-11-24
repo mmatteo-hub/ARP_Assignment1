@@ -8,37 +8,76 @@
 #include <time.h>
 #include <signal.h>
 
-time_t t;
+#define secs 20
+
+//time_t t;
+sig_atomic_t sig;
+
+int pidX_got, pidZ_got;
+int fdX, fdZ;
+char pid_motX[80];
+char pid_motZ[80];
+char format_string[80] = "%d";
 
 float x_position, z_position;
 
 void sig_handler(int signo)
 {
-    if (signo == SIGUSR1)
-    {
-        printf("Signal received\n");
-        t = time(NULL);
-    }
+    if (signo == SIGUSR1) sig = 1;
+    else sig = 0;
 }
 
 int main(int argc, char * argv[])
 {
-    t = time(NULL);
+    //t = time(NULL);
     signal(SIGUSR1,sig_handler);
-    int fd_exec;
-    char * myfifo_watchdog = "/tmp/fifo_watchdog";
+    //int fd_exec;
+    // pipes from motors to watchdog
+    char * fifo_pid_motX = "/tmp/comm_motX";
+    char * fifo_pid_motZ = "/tmp/comm_motZ";
+    
     char * watchdog_motX = "/tmp/watchdog_motX";
     char * watchdog_motZ= "/tmp/watchdog_motZ";
-    mkfifo(myfifo_watchdog,0666);
+
+    mkfifo(fifo_pid_motX,0666);
+    mkfifo(fifo_pid_motZ,0666);
     mkfifo(watchdog_motX,0666);
     mkfifo(watchdog_motZ,0666);
+
+    char pid_w[80];
+
+    // getting watchdog pid
+    int fd_watchdog = open(watchdog_motX,O_WRONLY);
+    sprintf(pid_w,format_string,(int)getpid());
+    write(fd_watchdog,pid_w,strlen(pid_w)+1);
+    close(fd_watchdog);
+    unlink(watchdog_motX);
+
+    fd_watchdog = open(watchdog_motZ,O_WRONLY);
+    write(fd_watchdog,pid_w,strlen(pid_w)+1);
+    close(fd_watchdog);
+    unlink(watchdog_motZ);
+
+    // takes the pid of motorX and stores it into a variable
+    fdX = open(fifo_pid_motX,O_RDONLY);
+    read(fdX, pid_motX, 80);
+    sscanf(pid_motX, format_string, &pidX_got);
+    close(fdX);
+    unlink(fifo_pid_motX);
+
+    // takes the pid of motorZ and stores it into a variable
+    fdZ = open(fifo_pid_motZ,O_RDONLY);
+    read(fdZ, pid_motZ, 80);
+    sscanf(pid_motZ, format_string, &pidZ_got);
+    close(fdZ);
+    unlink(fifo_pid_motZ);
 
     char strp[80];
     char passVal[80];
     char format_string[80] = "%d,%d,%d,%d,%d";
     int pid1, pid2, pid3, pid4, pid5;
 
-    fd_exec = open(myfifo_watchdog,O_RDONLY); 
+    /*fd_exec = open(myfifo_watchdog,O_RDONLY); 
     read(fd_exec, strp, 80); 
     sscanf(strp, format_string, &pid1, &pid2, &pid3, &pid4, &pid5);
     close(fd_exec);
@@ -47,51 +86,21 @@ int main(int argc, char * argv[])
     printf("Inside watchdog\n");
     fflush(stdout);
     printf("PIDs are:\n(PID_1 = %d)\n(PID_2 = %d)\n(PID_3 = %d)\n(PID_4 = %d)\n(PID_5 = %d)\n", pid1,  pid2, pid3, pid4, pid5); 
-    fflush(stdout);
+    fflush(stdout);*/
     
+    int flag = 1;
+
     while(1)
     {
-        /*if(difftime(time(NULL),t) > 15)
-        {
-            printf("Resetting ... by watchdog\n");
-            fflush(stdout);
+        do
+        {   
+            flag = 0;
+            sleep(secs);
+        } while(flag);
 
-            int fdX = open(watchdog_motX, O_WRONLY);
-            int fdZ = open(watchdog_motZ, O_WRONLY);
-            x_position = 0;
-            z_position = 0;
-            sprintf(passVal,format_string,x_position);
-            write(fdX,passVal,strlen(passVal)+1);
-            sprintf(passVal,format_string,z_position);
-            write(fdZ,passVal,strlen(passVal)+1);
-            close(fdZ);
-            unlink(watchdog_motZ);
-            close(fdX);
-            unlink(watchdog_motX);
-        }*/
+        printf("No signals received: reset incoming!\n"); fflush(stdout);
 
-        if(difftime(time(NULL),t) > 1000)
-        {
-            kill(pid1,SIGKILL);
-            printf("Process with (PID = %d) killed\n", pid1);
-            fflush(stdout);
-            sleep(1);
-            kill(pid2,SIGKILL);
-            printf("Process with (PID = %d) killed\n", pid2);
-            fflush(stdout);
-            sleep(1);
-            kill(pid3,SIGKILL);
-            printf("Process with (PID = %d) killed\n", pid3);
-            fflush(stdout);
-            sleep(1);
-            kill(pid4,SIGKILL);
-            printf("Process with (PID = %d) killed\n", pid4);
-            fflush(stdout);
-            sleep(1);
-            printf("I'll terminate watchdog process, (PID = %d), in 5 seconds\n", pid5);
-            fflush(stdout);
-            sleep(5);
-            kill(pid5,SIGKILL);
-        }
+        kill(pidX_got,SIGUSR1);
+        kill(pidZ_got,SIGUSR1);
     }
 }

@@ -113,7 +113,7 @@ int main()
   }
   printf("5th konsole (PID = %d)\n", pid5);
   fflush(stdout);
-
+/*
   // saving all 5 processes' pids
   sprintf(outup_string, format_string, pid1, pid2, pid3, pid4, pid5);
 
@@ -121,6 +121,7 @@ int main()
   fd = open(myfifo_watchdog, O_WRONLY);
   write(fd, outup_string, strlen(outup_string)+1);
   close(fd);
+*/
 
   printf ("Main program exiting...\n");
   fflush(stdout);

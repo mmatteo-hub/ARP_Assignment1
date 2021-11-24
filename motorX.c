@@ -15,6 +15,8 @@
 float x_position = 0; // motorX positiion
 float err; // error in motorX position
 
+sig_atomic_t sig = 0;
+
 int sign(void)
 {
     int n = rand() % 100;
@@ -22,9 +24,19 @@ int sign(void)
     else return 0;
 }
 
+// manages signal from watchdog 
+void sig_handler(int signo)
+{
+    if (signo == SIGUSR1) sig = 1;
+    else if(signo == SIGUSR2) sig = 2;
+}
+
+int watchdogPid;
 
 int main(int argc, char * argv[])
 {
+    signal(SIGUSR1,sig_handler);
+    
     // pipe communicating with the command console for passing the pid of the process
     char * fifo_mot_commX = "/tmp/comm_motX";
 
@@ -55,13 +67,20 @@ int main(int argc, char * argv[])
     sprintf(pid_string,format_pid_string,(int)getpid());
     write(fd,pid_string,strlen(pid_string)+1);
     close(fd);
+
+    char pid[80];
+
+    fd = open(watchdog_motX,O_RDONLY);
+    read(fd, pid, 80);
+    sscanf(pid, format_pid_string, &watchdogPid);
+    close(fd);
+    unlink(watchdog_motX);
     
     // initialise struct for the select
     fd_set rfds;
     struct timeval tv;
     int retval;
 
-    char input_string_comm[80];
     char input_string_insp[80];
     char format_string[80] = "%f";
     char input_str;
@@ -90,6 +109,27 @@ int main(int argc, char * argv[])
         // calling the select to detect changes in the pipes
         retval = select(FD_SETSIZE+1,&rfds,NULL,NULL,&tv);
 
+        switch(sig)
+        {
+            case 1: // go to the reset
+                x_position = 0;
+                printf("X = %f\n",x_position);
+                fflush(stdout);
+                sprintf(passVal,format_string,x_position);
+                write(fd_x,passVal,strlen(passVal)+1);
+                sleep(1);
+                break;
+
+            case 2: // go to the stop
+                sprintf(passVal,format_string,x_position);
+                write(fd_x,passVal,strlen(passVal)+1);
+                sleep(1);
+                break;
+
+            default:
+                break;
+        }
+
         switch(retval)
         {
             case -1: // select error
@@ -98,7 +138,7 @@ int main(int argc, char * argv[])
                 break;
 
             case 0: // no new value
-                switch(atoi(input_string_comm))
+                switch(atoi(input_string_insp))
                 {
                     // left
                     case 97: // case a
@@ -129,6 +169,7 @@ int main(int argc, char * argv[])
                             printf("X cannot be decreased any more\n");
                             fflush(stdout);
                         }
+                        kill(watchdogPid,SIGUSR1);
                         break;
 
                     // right
@@ -162,6 +203,7 @@ int main(int argc, char * argv[])
                             printf("X cannot be increased any more\n");
                             fflush(stdout);
                         }
+                        kill(watchdogPid,SIGUSR1);
                         break;
 
                     // stop
@@ -175,6 +217,7 @@ int main(int argc, char * argv[])
                     default:
                         break;
                 }
+                
                 switch(atoi(input_string_insp)) // switch among the command taken from the inspection console
                 {
                     // reset
@@ -205,7 +248,7 @@ int main(int argc, char * argv[])
                 // check with the if statements which fd the change belongs to
                 if(FD_ISSET(fd_val,&rfds))
                 {
-                    read(fd_val, input_string_comm, 80);
+                    read(fd_val, input_string_insp, 80);
                 }
                 if(FD_ISSET(fd_insp,&rfds))
                 {

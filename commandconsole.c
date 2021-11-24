@@ -7,21 +7,12 @@
 #include <stdlib.h>
 #include <signal.h>
 
-int fdX, fdZ;
 char format_string[80] = "%d";
 char format_str_var[80] = "%c";
-char pid_motX[80];
-char pid_motZ[80];
-int pidX_got;
-int pidZ_got;
 
 int main(int argc, char * argv[])
 {
     char outup_string[80];
-
-    // pipes from command console to motors
-    char * fifo_comm_motX = "/tmp/comm_motX";
-    char * fifo_comm_motZ = "/tmp/comm_motZ";
 
     // pipe communicating with the executor
     char * myfifo_command = "/tmp/fifo_command";
@@ -29,25 +20,9 @@ int main(int argc, char * argv[])
     // pipes to pass the value from command console to the motorX and motorZ respectevely
     char * fifo_valX = "/tmp/fifo_valX";
     char * fifo_valZ = "/tmp/fifo_valZ";
-    mkfifo(fifo_comm_motX,0666);
-    mkfifo(fifo_comm_motZ,0666);
     mkfifo(myfifo_command,0666);
     mkfifo(fifo_valX,0666);
 
-    // takes the pid of motorX and stores it into a variable
-    fdX = open(fifo_comm_motX,O_RDONLY);
-    read(fdX, pid_motX, 80);
-    sscanf(pid_motX, format_string, &pidX_got);
-    close(fdX);
-    unlink(fifo_comm_motX);
-
-    // takes the pid of motorZ and stores it into a variable
-    fdZ = open(fifo_comm_motZ,O_RDONLY);
-    read(fdZ, pid_motZ, 80);
-    sscanf(pid_motZ, format_string, &pidZ_got);
-    close(fdZ);
-    unlink(fifo_comm_motZ);
-    
     char ch1[80];
     char var;
     
