@@ -35,23 +35,23 @@ int main(int argc, char * argv[])
     char * inspection_motX = "/tmp/inspection_motX";
     char * inspection_motZ= "/tmp/inspection_motZ";
 
-    mkfifo(myfifo_inspection, 666);
+    mkfifo(myfifo_inspection, 0666);
     mkfifo(fifo_inspmotX, 0666);
     mkfifo(fifo_inspmotZ, 0666);
     mkfifo(fifo_motXinsp, 0666);
     mkfifo(fifo_motZinsp, 0666);
-    mkfifo(inspection_motX,0666);
-    mkfifo(inspection_motZ,0666);
+    mkfifo(inspection_motX, 0666);
+    mkfifo(inspection_motZ, 0666);
 
     // takes the pid of motorX and stores it into a variable
-    fdX = open(inspection_motX,O_RDONLY);
+    fdX = open(inspection_motX,O_RDONLY | O_NONBLOCK);
     read(fdX, pid_motX, 80);
     sscanf(pid_motX, format_string_pid, &pidX_got);
     close(fdX);
     unlink(inspection_motX);
 
     // takes the pid of motorZ and stores it into a variable
-    fdZ = open(inspection_motZ,O_RDONLY);
+    fdZ = open(inspection_motZ,O_RDONLY | O_NONBLOCK);
     read(fdZ, pid_motZ, 80);
     sscanf(pid_motZ, format_string_pid, &pidZ_got);
     close(fdZ);
@@ -79,11 +79,11 @@ int main(int argc, char * argv[])
         read(fd_z_read, input_string_z, 80);
        
         // initialise the set and add the file descriptors of the pipe to detect
-        FD_ZERO(&rfds);
-        FD_SET(fd_x_write,&rfds);
-        FD_SET(fd_z_write,&rfds);
-        FD_SET(fd_x_read,&rfds);
-        FD_SET(fd_z_read,&rfds);
+        //FD_ZERO(&rfds);
+        //FD_SET(fd_x_write,&rfds);
+        //FD_SET(fd_z_write,&rfds);
+        //FD_SET(fd_x_read,&rfds);
+        //FD_SET(fd_z_read,&rfds);
 
         // setting the time select has to wait for
         tv.tv_sec = 0;
@@ -111,41 +111,40 @@ int main(int argc, char * argv[])
 
             default:
                 ch1[0] = read(fd_stdin,out_str,80);
+                //sprintf(out_str, format_string, ch1[0]); // prints the char according to a format string
+                //var = ch1[0];
+                switch(ch1[0])
                 {
-                    //sprintf(out_str, format_string, ch1[0]); // prints the char according to a format string
-                    var = ch1[0];
-                    switch(var)
-                    {
-                        // reset
-                        case 114: // case r
-                        case 82: // case R
-                            printf("RESET WAS PRESSED\n");
-                            fflush(stdout);
-                            kill(pidX_got,SIGUSR1);
-                            kill(pidZ_got,SIGUSR1);
-                            /*
-                            write(fd_x_write, out_str, strlen(out_str)+1);
-                            write(fd_z_write, out_str, strlen(out_str)+1);
-                            */
-                            break;
+                    // reset
+                    case 114: // case r
+                    case 82: // case R
+                        printf("RESET WAS PRESSED\n");
+                        fflush(stdout);
+                        kill(pidX_got,SIGUSR1);
+                        kill(pidZ_got,SIGUSR1);
+                        /*
+                        write(fd_x_write, out_str, strlen(out_str)+1);
+                        write(fd_z_write, out_str, strlen(out_str)+1);
+                        */
+                        break;
 
-                        // emergency stop
-                        case 115: // case s
-                        case 83: // case S
-                            printf("EMERGENCY STOP WAS PRESSED\n");
-                            fflush(stdout);
-                            kill(pidX_got,SIGUSR2);
-                            kill(pidZ_got,SIGUSR2);
-                            /*
-                            write(fd_x_write, out_str, strlen(out_str)+1);
-                            write(fd_z_write, out_str, strlen(out_str)+1);*/
-                            break;
-                        default:
-                            printf("Wrong input, key pressed: %c\n", var);
-                            fflush(stdout);
-                            break;
+                    // emergency stop
+                    case 115: // case s
+                    case 83: // case S
+                        printf("EMERGENCY STOP WAS PRESSED\n");
+                        fflush(stdout);
+                        kill(pidX_got,SIGUSR2);
+                        kill(pidZ_got,SIGUSR2);
+                        /*
+                        write(fd_x_write, out_str, strlen(out_str)+1);
+                        write(fd_z_write, out_str, strlen(out_str)+1);*/
+                        break;
+
+                    default:
+                        printf("Wrong input, key pressed: %c\n", var);
+                        fflush(stdout);
+                        break;
                     }
-                }
                 break;
         }
 

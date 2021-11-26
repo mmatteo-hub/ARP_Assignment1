@@ -47,26 +47,26 @@ int main(int argc, char * argv[])
     char pid_w[80];
 
     // getting watchdog pid
-    int fd_watchdog = open(watchdog_motX,O_WRONLY);
+    int fd_watchdog = open(watchdog_motX,O_WRONLY | O_NONBLOCK);
     sprintf(pid_w,format_string,(int)getpid());
     write(fd_watchdog,pid_w,strlen(pid_w)+1);
     close(fd_watchdog);
     unlink(watchdog_motX);
 
-    fd_watchdog = open(watchdog_motZ,O_WRONLY);
+    fd_watchdog = open(watchdog_motZ,O_WRONLY | O_NONBLOCK);
     write(fd_watchdog,pid_w,strlen(pid_w)+1);
     close(fd_watchdog);
     unlink(watchdog_motZ);
 
     // takes the pid of motorX and stores it into a variable
-    fdX = open(fifo_pid_motX,O_RDONLY);
+    fdX = open(fifo_pid_motX,O_RDONLY | O_NONBLOCK);
     read(fdX, pid_motX, 80);
     sscanf(pid_motX, format_string, &pidX_got);
     close(fdX);
     unlink(fifo_pid_motX);
 
     // takes the pid of motorZ and stores it into a variable
-    fdZ = open(fifo_pid_motZ,O_RDONLY);
+    fdZ = open(fifo_pid_motZ,O_RDONLY | O_NONBLOCK);
     read(fdZ, pid_motZ, 80);
     sscanf(pid_motZ, format_string, &pidZ_got);
     close(fdZ);
@@ -94,13 +94,15 @@ int main(int argc, char * argv[])
     {
         do
         {   
-            flag = 0;
             sleep(secs);
-        } while(flag);
+        } while(!sig);
 
-        printf("No signals received: reset incoming!\n"); fflush(stdout);
+        if(sig)
+        {
+            printf("No signals received: reset incoming!\n"); fflush(stdout);
 
-        kill(pidX_got,SIGUSR1);
-        kill(pidZ_got,SIGUSR1);
+            kill(pidX_got,SIGUSR1);
+            kill(pidZ_got,SIGUSR1);
+        }
     }
 }

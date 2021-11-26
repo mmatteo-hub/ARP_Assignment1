@@ -27,8 +27,8 @@ int sign(void)
 // manages signal from watchdog 
 void sig_handler(int signo)
 {
-    if (signo == SIGUSR1) sig = 1;
-    else if(signo == SIGUSR2) sig = 2;
+    if (signo == SIGUSR2) sig = 1;
+    else if(signo == SIGUSR1) sig = 2;
 }
 
 int watchdogPid;
@@ -43,7 +43,7 @@ int main(int argc, char * argv[])
     // pipe to read the value from command console
     char * fifo_valX = "/tmp/fifo_valX";
 
-    // pipe to write commands and sent them to the inspection console
+    // pipe to write commands and send them to the inspection console
     char * fifo_motXinsp = "/tmp/motX_insp";
 
     // pipe to read commands from the inspection console
@@ -63,14 +63,14 @@ int main(int argc, char * argv[])
     char format_pid_string[80] = "%d";
 
     // using the pipe to take the process pid and write on it
-    int fd = open(fifo_mot_commX,O_WRONLY);
+    int fd = open(fifo_mot_commX,O_WRONLY | O_NONBLOCK);
     sprintf(pid_string,format_pid_string,(int)getpid());
     write(fd,pid_string,strlen(pid_string)+1);
     close(fd);
 
     char pid[80];
 
-    fd = open(watchdog_motX,O_RDONLY);
+    fd = open(watchdog_motX,O_RDONLY | O_NONBLOCK);
     read(fd, pid, 80);
     sscanf(pid, format_pid_string, &watchdogPid);
     close(fd);
@@ -82,6 +82,7 @@ int main(int argc, char * argv[])
     int retval;
 
     char input_string_insp[80];
+    char input_string_comm[80];
     char format_string[80] = "%f";
     char input_str;
     char passVal[80];
@@ -94,7 +95,6 @@ int main(int argc, char * argv[])
         int s = sign();
         // open pipes
         int fd_val = open(fifo_valX, O_RDONLY | O_NONBLOCK);
-        sleep(0.5);
         int fd_insp = open(fifo_inspmotX, O_RDONLY | O_NONBLOCK);
         int fd_x = open(fifo_motXinsp, O_WRONLY | O_NONBLOCK);
         // initialise the set and add the file descriptors of the pipe to detect
@@ -111,19 +111,19 @@ int main(int argc, char * argv[])
 
         switch(sig)
         {
-            case 1: // go to the reset
+            case 1: // go to the stop
+                sprintf(passVal,format_string,x_position);
+                write(fd_x,passVal,strlen(passVal)+1);
+                sleep(0.5);
+                break;
+
+            case 2: // go to the reset
                 x_position = 0;
                 printf("X = %f\n",x_position);
                 fflush(stdout);
                 sprintf(passVal,format_string,x_position);
                 write(fd_x,passVal,strlen(passVal)+1);
-                sleep(1);
-                break;
-
-            case 2: // go to the stop
-                sprintf(passVal,format_string,x_position);
-                write(fd_x,passVal,strlen(passVal)+1);
-                sleep(1);
+                sleep(0.5);
                 break;
 
             default:
@@ -138,7 +138,7 @@ int main(int argc, char * argv[])
                 break;
 
             case 0: // no new value
-                switch(atoi(input_string_insp))
+                switch(atoi(input_string_comm))
                 {
                     // left
                     case 97: // case a
@@ -152,7 +152,7 @@ int main(int argc, char * argv[])
                                 fflush(stdout);
                                 sprintf(passVal,format_string,x_position);
                                 write(fd_x,passVal,strlen(passVal)+1);
-                                sleep(1);
+                                sleep(0.5);
                             }
                             else if(!s)
                             {
@@ -161,7 +161,7 @@ int main(int argc, char * argv[])
                                 fflush(stdout);
                                 sprintf(passVal,format_string,x_position);
                                 write(fd_x,passVal,strlen(passVal)+1);
-                                sleep(1);
+                                sleep(0.5);
                             }
                         }
                         else
@@ -186,7 +186,7 @@ int main(int argc, char * argv[])
                                 fflush(stdout);
                                 sprintf(passVal,format_string,x_position);
                                 write(fd_x,passVal,strlen(passVal)+1);
-                                sleep(1);
+                                sleep(0.5);
                             }
                             else if(!s)
                             {
@@ -195,7 +195,7 @@ int main(int argc, char * argv[])
                                 fflush(stdout);
                                 sprintf(passVal,format_string,x_position);
                                 write(fd_x,passVal,strlen(passVal)+1);
-                                sleep(1);
+                                sleep(0.5);
                             }
                         }
                         else
@@ -211,7 +211,7 @@ int main(int argc, char * argv[])
                     case 81: // case Q
                         sprintf(passVal,format_string,x_position);
                         write(fd_x,passVal,strlen(passVal)+1);
-                        sleep(1);
+                        sleep(0.5);
                         break;
 
                     default:
@@ -228,7 +228,8 @@ int main(int argc, char * argv[])
                         fflush(stdout);
                         sprintf(passVal,format_string,x_position);
                         write(fd_x,passVal,strlen(passVal)+1);
-                        sleep(1);
+                        sleep(0.5);
+                        kill(watchdogPid,SIGUSR1);
                         break;
 
                     // emergency stop
@@ -236,7 +237,8 @@ int main(int argc, char * argv[])
                     case 83: // case S
                         sprintf(passVal,format_string,x_position);
                         write(fd_x,passVal,strlen(passVal)+1);
-                        sleep(1);
+                        sleep(0.5);
+                        kill(watchdogPid,SIGUSR1);
                         break;
 
                     default:
@@ -248,7 +250,7 @@ int main(int argc, char * argv[])
                 // check with the if statements which fd the change belongs to
                 if(FD_ISSET(fd_val,&rfds))
                 {
-                    read(fd_val, input_string_insp, 80);
+                    read(fd_val, input_string_comm, 80);
                 }
                 if(FD_ISSET(fd_insp,&rfds))
                 {
