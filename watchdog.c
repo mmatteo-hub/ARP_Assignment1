@@ -37,8 +37,20 @@ int main(int argc, char * argv[])
     char * watchdog_motX = "/tmp/watchdog_motX";
     char * watchdog_motZ= "/tmp/watchdog_motZ";
 
+    char * pid_motX = "/tmp/pid_motX";
+
     mkfifo(watchdog_motX,0666);
     mkfifo(watchdog_motZ,0666);
+    mkfifo(pid_motX, 0666);
+
+    char pid[80];
+
+    sleep(2);
+    int x_pid = open(pid_motX, O_RDONLY | O_NONBLOCK);
+    read(x_pid, pid, 80);
+    sscanf(pid, format_string, &pidX_got);
+    close(x_pid);
+    printf("%s\n", pidX_got); fflush(stdout);
 
     char pid_w[80];
 

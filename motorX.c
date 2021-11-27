@@ -14,12 +14,16 @@ int fd_val, fdX_write;
 char pid_string[80];
 char format_pid_string[80] = "%d";
 
-sig_atomic_t sig = 0;
+int sig = 0;
 
 // signals from inspection
 void sig_handler(int signo)
 {
-    if (signo == SIGUSR1) sig = 1; // reset
+    if (signo == SIGUSR1)
+    {
+        sig = 1; // reset
+        printf("sig received\n"); 
+    } 
     else if(signo == SIGUSR2) sig = 2; // stop
 }
 
@@ -31,8 +35,20 @@ int main(int argc, char * argv[])
 
     char * fifo_valX = "/tmp/fifo_valX";
     char * fifo_motXinsp = "/tmp/motX_insp";
+    char * pid_motX = "/tmp/pid_motX";
     mkfifo(fifo_valX,0666);
     mkfifo(fifo_motXinsp,0666);
+    mkfifo(pid_motX,0666);
+    printf("%d\n", (int)getpid()); fflush(stdout);
+
+    char pid[80];
+
+    sprintf(pid, format_pid_string, (int)getpid());
+
+    int x_pid = open(pid_motX, O_WRONLY);
+    write(x_pid, pid, strlen(pid)+1);
+    close(x_pid);
+    printf("%d\n", pid[0]); fflush(stdout);
 
     // initialise struct for the select
     fd_set rfds;
@@ -49,7 +65,7 @@ int main(int argc, char * argv[])
         // open pipe
         fd_val = open(fifo_valX,O_RDONLY);
         fdX_write = open(fifo_motXinsp, O_WRONLY | O_NONBLOCK);
-        
+
         switch(sig)
         {
             case 1: // reset
