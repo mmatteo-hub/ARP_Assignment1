@@ -7,128 +7,69 @@
 #include <stdlib.h>
 #include <signal.h>
 #include <sys/select.h>
-#include <math.h>
-
-// maximum err
-#define delta 0.25
 
 float x_position = 0; // motorX positiion
-float err; // error in motorX position
+
+int fd_val, fdX_write;
+char pid_string[80];
+char format_pid_string[80] = "%d";
 
 sig_atomic_t sig = 0;
 
-int sign(void)
-{
-    int n = rand() % 100;
-    if(floor(n) > 49 ) return 1;
-    else return 0;
-}
-
-// manages signal from watchdog 
+// signals from inspection
 void sig_handler(int signo)
 {
-    if (signo == SIGUSR2) sig = 1;
-    else if(signo == SIGUSR1) sig = 2;
+    if (signo == SIGUSR1) sig = 1; // reset
+    else if(signo == SIGUSR2) sig = 2; // stop
 }
-
-int watchdogPid;
 
 int main(int argc, char * argv[])
 {
+    // signals from inspection
     signal(SIGUSR1,sig_handler);
-    
-    // pipe communicating with the command console for passing the pid of the process
-    char * fifo_mot_commX = "/tmp/comm_motX";
+    signal(SIGUSR2,sig_handler);
 
-    // pipe to read the value from command console
     char * fifo_valX = "/tmp/fifo_valX";
-
-    // pipe to write commands and send them to the inspection console
     char * fifo_motXinsp = "/tmp/motX_insp";
-
-    // pipe to read commands from the inspection console
-    char * fifo_inspmotX = "/tmp/insp_motX";
-
-    // pipe from watchdog to motX
-    char * watchdog_motX = "/tmp/watchdog_motX";
-    
-    mkfifo(fifo_mot_commX,0666);
     mkfifo(fifo_valX,0666);
     mkfifo(fifo_motXinsp,0666);
-    mkfifo(fifo_inspmotX,0666);
-    mkfifo(watchdog_motX,0666);
 
-    // send the process pid via pipe to the command console
-    char pid_string[80];
-    char format_pid_string[80] = "%d";
-
-    // using the pipe to take the process pid and write on it
-    int fd = open(fifo_mot_commX,O_WRONLY | O_NONBLOCK);
-    sprintf(pid_string,format_pid_string,(int)getpid());
-    write(fd,pid_string,strlen(pid_string)+1);
-    close(fd);
-
-    char pid[80];
-
-    fd = open(watchdog_motX,O_RDONLY | O_NONBLOCK);
-    read(fd, pid, 80);
-    sscanf(pid, format_pid_string, &watchdogPid);
-    close(fd);
-    unlink(watchdog_motX);
-    
     // initialise struct for the select
     fd_set rfds;
     struct timeval tv;
     int retval;
 
-    char input_string_insp[80];
-    char input_string_comm[80];
+    char input_string[80];
     char format_string[80] = "%f";
     char input_str;
     char passVal[80];
 
     while(1)
     {
-        // compute the error
-        float err = (rand() % 1)/4;
-        // compute the sign
-        int s = sign();
-        // open pipes
-        int fd_val = open(fifo_valX, O_RDONLY | O_NONBLOCK);
-        int fd_insp = open(fifo_inspmotX, O_RDONLY | O_NONBLOCK);
-        int fd_x = open(fifo_motXinsp, O_WRONLY | O_NONBLOCK);
-        // initialise the set and add the file descriptors of the pipe to detect
-        FD_ZERO(&rfds);
-        FD_SET(fd_val,&rfds);
-        FD_SET(fd_insp,&rfds);
-
-        // setting the time select has to wait for
-        tv.tv_sec = 0;
-        tv.tv_usec = 0;
-
-        // calling the select to detect changes in the pipes
-        retval = select(FD_SETSIZE+1,&rfds,NULL,NULL,&tv);
-
+        // open pipe
+        fd_val = open(fifo_valX,O_RDONLY);
+        fdX_write = open(fifo_motXinsp, O_WRONLY | O_NONBLOCK);
+        
         switch(sig)
         {
-            case 1: // go to the stop
-                sprintf(passVal,format_string,x_position);
-                write(fd_x,passVal,strlen(passVal)+1);
-                sleep(0.5);
-                break;
-
-            case 2: // go to the reset
+            case 1: // reset
                 x_position = 0;
-                printf("X = %f\n",x_position);
-                fflush(stdout);
                 sprintf(passVal,format_string,x_position);
-                write(fd_x,passVal,strlen(passVal)+1);
-                sleep(0.5);
+                write(fdX_write,passVal,strlen(passVal)+1);
+                sig = 0;
                 break;
-
+            
             default:
                 break;
         }
+
+        FD_ZERO(&rfds);
+        FD_SET(fd_val,&rfds);
+
+        tv.tv_sec = 0;
+        tv.tv_usec = 0;
+
+        retval = select(FD_SETSIZE+1,&rfds,NULL,NULL,&tv);
 
         switch(retval)
         {
@@ -138,133 +79,69 @@ int main(int argc, char * argv[])
                 break;
 
             case 0: // no new value
-                switch(atoi(input_string_comm))
+                switch(atoi(input_string))
                 {
-                    // left
-                    case 97: // case a
-                    case 65: // case A
-                        if(x_position - err > 0)
+                    case 97: // left
+                        if(x_position > 0)
                         {
-                            if(s)
-                            {
-                                x_position -= (delta+err);
-                                printf("X = %f\n",x_position);
-                                fflush(stdout);
-                                sprintf(passVal,format_string,x_position);
-                                write(fd_x,passVal,strlen(passVal)+1);
-                                sleep(0.5);
-                            }
-                            else if(!s)
-                            {
-                                x_position -= (delta-err);
-                                printf("X = %f\n",x_position);
-                                fflush(stdout);
-                                sprintf(passVal,format_string,x_position);
-                                write(fd_x,passVal,strlen(passVal)+1);
-                                sleep(0.5);
-                            }
+                            x_position -= 0.25;
+                            sprintf(passVal,format_string,x_position);
+                            write(fdX_write,passVal,strlen(passVal)+1);
+                            printf("%s\n",passVal); fflush(stdout);
+                            printf("X = %f\n",x_position);
+                            fflush(stdout);
+                            sleep(1);
                         }
                         else
                         {
                             printf("X cannot be decreased any more\n");
                             fflush(stdout);
                         }
-                        kill(watchdogPid,SIGUSR1);
                         break;
 
-                    // right
-                    case 100: // case d
-                    case 68: // case D
+                    case 100: // right
                         if(x_position < 20)
                         {
-                            printf("here\n");
+                            x_position += 0.25;
+                            sprintf(passVal,format_string,x_position);
+                            write(fdX_write,passVal,strlen(passVal)+1);
+                            printf("%s\n",passVal); fflush(stdout);
+                            printf("X = %f\n",x_position);
                             fflush(stdout);
-                            if(s)
-                            {
-                                x_position += (delta+err);
-                                printf("X = %f\n",x_position);
-                                fflush(stdout);
-                                sprintf(passVal,format_string,x_position);
-                                write(fd_x,passVal,strlen(passVal)+1);
-                                sleep(0.5);
-                            }
-                            else if(!s)
-                            {
-                                x_position += (delta-err);
-                                printf("X = %f\n",x_position);
-                                fflush(stdout);
-                                sprintf(passVal,format_string,x_position);
-                                write(fd_x,passVal,strlen(passVal)+1);
-                                sleep(0.5);
-                            }
+                            sleep(1);
                         }
                         else
                         {
                             printf("X cannot be increased any more\n");
                             fflush(stdout);
                         }
-                        kill(watchdogPid,SIGUSR1);
                         break;
 
-                    // stop
-                    case 113: // case q
-                    case 81: // case Q
-                        sprintf(passVal,format_string,x_position);
-                        write(fd_x,passVal,strlen(passVal)+1);
-                        sleep(0.5);
-                        break;
-
-                    default:
-                        break;
-                }
-                
-                switch(atoi(input_string_insp)) // switch among the command taken from the inspection console
-                {
-                    // reset
-                    case 114: // case r
-                    case 82: // case R
-                        x_position = 0;
-                        printf("X = %f\n",x_position);
+                    case 114: // reset
+                        printf("Resetting...\n");
                         fflush(stdout);
-                        sprintf(passVal,format_string,x_position);
-                        write(fd_x,passVal,strlen(passVal)+1);
-                        sleep(0.5);
-                        kill(watchdogPid,SIGUSR1);
+                        x_position = 0;
+                        sleep(1);
                         break;
 
-                    // emergency stop
-                    case 115: // case s
-                    case 83: // case S
-                        sprintf(passVal,format_string,x_position);
-                        write(fd_x,passVal,strlen(passVal)+1);
-                        sleep(0.5);
-                        kill(watchdogPid,SIGUSR1);
+                    case 115: // stop
+                        printf("Stop X = %f\n",x_position);
+                        fflush(stdout);
+                        sleep(1);
                         break;
-
+                    
                     default:
                         break;
                 }
                 break;
 
             default: // got a new value
-                // check with the if statements which fd the change belongs to
-                if(FD_ISSET(fd_val,&rfds))
-                {
-                    read(fd_val, input_string_comm, 80);
-                }
-                if(FD_ISSET(fd_insp,&rfds))
-                {
-                    read(fd_insp, input_string_insp, 80);
-                }
+                read(fd_val, input_string, 80);
                 break;
         }
-
-        // close pipes
-        close(fd_x);
-        close(fd_insp);
+        close(fdX_write);
         close(fd_val);
     }
-    unlink(fifo_motXinsp);
-    unlink(fifo_inspmotX);
     unlink(fifo_valX);
+    unlink(fifo_motXinsp);
 }

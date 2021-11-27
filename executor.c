@@ -24,9 +24,8 @@ int spawn(const char * program, char ** arg_list)
 
 int main() 
 {
-  int fd;
-  int fdp;
-  int val;
+  int fd_watchdog;
+  int fd_inspection;
 
   pid_t child_pid;
 
@@ -53,7 +52,7 @@ int main()
   char outup_string[80];
   char motor_pids_string[80];
   char out_str[80];
-  char format_string[80] = "%d,%d,%d,%d,%d";
+  char format_string[80] = "%d,%d";
   
   // creation of 5 processes
   int pid1, pid2, pid3, pid4, pid5;
@@ -97,7 +96,7 @@ int main()
   if (child_pid != 0) pid4 = child_pid;
   else
   {
-    if ( execl ("/usr/bin/konsole","/usr/bin/konsole",  "--hold", "-e", "./motorZ", (char*) NULL) == -1) perror("exec failed");
+    if ( execl ("./motorZ","./motorZ" , (char*) NULL) == -1) perror("exec failed");
   exit(1);
   }
   printf("4th konsole (PID = %d)\n", pid4);
@@ -113,15 +112,18 @@ int main()
   }
   printf("5th konsole (PID = %d)\n", pid5);
   fflush(stdout);
-/*
   // saving all 5 processes' pids
-  sprintf(outup_string, format_string, pid1, pid2, pid3, pid4, pid5);
+  sprintf(outup_string, format_string, pid3, pid4);
 
-  // passing pids to watch dog through pipe
-  fd = open(myfifo_watchdog, O_WRONLY);
-  write(fd, outup_string, strlen(outup_string)+1);
-  close(fd);
-*/
+  // passing pids to watchdog via pipe
+  fd_watchdog = open(myfifo_watchdog, O_WRONLY);
+  write(fd_watchdog, outup_string, strlen(outup_string)+1);
+  close(fd_watchdog);
+
+  // passing pids to inspection via pipe
+  fd_inspection = open(myfifo_inspection, O_WRONLY);
+  write(fd_inspection, outup_string, strlen(outup_string)+1);
+  close(fd_inspection);
 
   printf ("Main program exiting...\n");
   fflush(stdout);
