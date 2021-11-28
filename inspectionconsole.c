@@ -42,7 +42,6 @@ int main(int argc, char * argv[])
     read(fd_pid,pid,80);
     pidX_got = atoi(pid);
     close(fd_pid);
-    //printf("pid X = %d\n", pidX_got); fflush(stdout);
 
     // getting  motorZ pid
     fd_pid = open(pid_motZ, O_RDONLY);
@@ -54,7 +53,6 @@ int main(int argc, char * argv[])
     read(fd_pid_w,pid,80);
     pidWD_got = atoi(pid);
     close(fd_pid_w);
-    //printf("WD = %d\n", pidWD_got); fflush(stdout);
 
     char ch1[80];
     char out_str[80];
@@ -108,31 +106,39 @@ int main(int argc, char * argv[])
                 break;
 
             default:
-                ch1[0] = read(fd_stdin,out_str,80);
-                sprintf(out_str, format_string, ch1[0]); // prints the char according to a format string
-                var = ch1[0];
-                switch(var)
+                read(fd_stdin,out_str,80);
+                out_str[strcspn(out_str,"\n")] = 0; // detele \n
+                fflush(stdin);
+                if(strlen(out_str) > 1)
                 {
-                    // reset
-                    case 114: // case r
-                    case 82: // case R
-                        printf("RESET WAS PRESSED\n");
-                        fflush(stdout);
-                        kill(pidX_got,SIGUSR1);
-                        kill(pidZ_got,SIGUSR1);
-                        break;
+                    printf("Wrong input. Input has to be 1 character only!\n");
+                    fflush(stdout);
+                }
+                else
+                {
+                    switch(out_str[0])
+                    {
+                        // reset
+                        case 114: // case r
+                        case 82: // case R
+                            printf("RESET WAS PRESSED\n");
+                            fflush(stdout);
+                            kill(pidX_got,SIGUSR1);
+                            kill(pidZ_got,SIGUSR1);
+                            break;
 
-                    // emergency stop
-                    case 115: // case s
-                    case 83: // case S
-                        printf("EMERGENCY STOP WAS PRESSED\n");
-                        fflush(stdout);
-                        kill(pidX_got,SIGUSR2);
-                        kill(pidZ_got,SIGUSR2);
-                        break;
+                        // emergency stop
+                        case 115: // case s
+                        case 83: // case S
+                            printf("EMERGENCY STOP WAS PRESSED\n");
+                            fflush(stdout);
+                            kill(pidX_got,SIGUSR2);
+                            kill(pidZ_got,SIGUSR2);
+                            break;
 
-                    default:
-                        break;
+                        default:
+                            break;
+                    }
                 }
                 break;
             }

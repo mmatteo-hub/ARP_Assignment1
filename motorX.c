@@ -22,14 +22,8 @@ int sig = 0;
 // signals from inspection
 void sig_handler(int signo)
 {
-    if (signo == SIGUSR1)
-    {
-        sig = 1; // reset
-    } 
-    else if(signo == SIGUSR2)
-    {
-        sig = 2; // stop
-    }
+    if (signo == SIGUSR1) sig = 1; // reset
+    else if(signo == SIGUSR2) sig = 2; // stop
 }
 
 int main(int argc, char * argv[])
@@ -155,6 +149,11 @@ int main(int argc, char * argv[])
                 x_position = 0;
                 sprintf(passVal,format_string,x_position);
                 write(fdX_write,passVal,strlen(passVal)+1);
+                sleep(1);
+                break;
+            
+            case 2: // stop
+                sleep(1);
                 break;
             
             default:
