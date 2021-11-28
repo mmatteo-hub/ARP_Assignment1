@@ -28,8 +28,8 @@ int main(int argc, char * argv[])
 
     // get watchdog pid
     int fd_wdComm = open(comm_wd,O_RDONLY);
-    read(fd_wdComm,pid_WD,strlen(pid_WD)+1);
-    pid_wd = atof(pid_WD);
+    read(fd_wdComm,pid_WD,80);
+    pid_wd = atoi(pid_WD);
     close(fd_wdComm);
     
     char ch1[80];
