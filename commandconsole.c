@@ -12,8 +12,8 @@ char format_string[80] = "%d";
 char format_str_var[80] = "%c";
 char pid_motX[80];
 char pid_motZ[80];
-int pidX_got;
-int pidZ_got;
+char pid_WD[80];
+int pidX_got, pidZ_got, pid_wd;
 
 int main(int argc, char * argv[])
 {
@@ -21,8 +21,15 @@ int main(int argc, char * argv[])
     // pipe from command console to motors
     char * fifo_valX = "/tmp/fifo_valX";
     char * fifo_valZ = "/tmp/fifo_valZ";
+    char * comm_wd = "/tmp/commd_wd";
     mkfifo(fifo_valX,0666);
     mkfifo(fifo_valZ,0666);
+    mkfifo(comm_wd,0666);
+
+    int fd_wdComm = open(comm_wd,O_RDONLY);
+    read(fd_wdComm,pid_WD,strlen(pid_WD)+1);
+    pid_wd = atof(pid_WD);
+    close(fd_wdComm);
     
     char ch1[80];
     char var;

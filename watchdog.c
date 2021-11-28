@@ -34,12 +34,13 @@ int main(int argc, char * argv[])
     
     char * watchdog_insp = "/tmp/watchdog_insp";
     char * watchdog_motZ= "/tmp/watchdog_motZ";
-
     char * pid_motX_watchdog = "/tmp/pid_motX_watch";
+    char * comm_wd = "/tmp/commd_wd";
 
     mkfifo(watchdog_insp,0666);
     mkfifo(watchdog_motZ,0666);
     mkfifo(pid_motX_watchdog, 0666);
+    mkfifo(comm_wd,0666);
 
     char pid[80];
 
@@ -58,9 +59,16 @@ int main(int argc, char * argv[])
     close(fd_watchdog);
     //printf(" WD = %d\n", (int)getpid()); fflush(stdout);
 
+    int fd_wdComm = open(comm_wd,O_WRONLY);
+    sprintf(pid_w,format_string,(int)getpid());
+    write(fd_wdComm,pid_w,strlen(pid_w)+1);
+    close(fd_wdComm);
+
+    /* to cange
     fd_watchdog = open(watchdog_motZ,O_WRONLY | O_NONBLOCK);
     write(fd_watchdog,pid_w,strlen(pid_w)+1);
     close(fd_watchdog);
+    */
 
     int flag = 0;
 
