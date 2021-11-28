@@ -15,15 +15,6 @@ char pid_motZ[80];
 int pidX_got;
 int pidZ_got;
 
-/*int open_pipe(int ch2, char* pipe_addr)
-{
-    char outup_string[80];
-    sprintf(outup_string, format_string, ch2);
-    fd = open(pipe_addr, O_WRONLY);
-    write(fd, outup_string, strlen(outup_string)+1);
-    close(fd);
-}*/
-
 int main(int argc, char * argv[])
 {
     char outup_string[80];

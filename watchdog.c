@@ -15,7 +15,7 @@ sig_atomic_t sig;
 
 int pidX_got, pidZ_got;
 int fdX, fdZ;
-char pids[80];
+char pid[80];
 char format_string[80] = "%d";
 char format_string_pid[80] = "%d,%d";
 
@@ -31,45 +31,36 @@ int main(int argc, char * argv[])
     //t = time(NULL);
     //signal(SIGUSR1,sig_handler);
     //int fd_exec;
-
-    char * fifo_watchdog = "/tmp/fifo_watchdog";
     
-    char * watchdog_motX = "/tmp/watchdog_motX";
+    char * watchdog_insp = "/tmp/watchdog_insp";
     char * watchdog_motZ= "/tmp/watchdog_motZ";
 
-    char * pid_motX = "/tmp/pid_motX";
+    char * pid_motX_watchdog = "/tmp/pid_motX_watch";
 
-    mkfifo(watchdog_motX,0666);
+    mkfifo(watchdog_insp,0666);
     mkfifo(watchdog_motZ,0666);
-    mkfifo(pid_motX, 0666);
+    mkfifo(pid_motX_watchdog, 0666);
 
     char pid[80];
 
-    sleep(2);
-    int x_pid = open(pid_motX, O_RDONLY | O_NONBLOCK);
-    read(x_pid, pid, 80);
-    sscanf(pid, format_string, &pidX_got);
-    close(x_pid);
-    printf("%s\n", pidX_got); fflush(stdout);
+    int x_pid_w = open(pid_motX_watchdog, O_RDONLY);
+    read(x_pid_w, pid, 80);
+    pidX_got = atoi(pid);
+    close(x_pid_w);
+    //printf("pidX = %d\n", pidX_got); fflush(stdout);
 
     char pid_w[80];
 
-    // getting watchdog pid
-    int fd_watchdog = open(watchdog_motX,O_WRONLY | O_NONBLOCK);
+    // writing watchdog pid
+    int fd_watchdog = open(watchdog_insp,O_WRONLY);
     sprintf(pid_w,format_string,(int)getpid());
     write(fd_watchdog,pid_w,strlen(pid_w)+1);
     close(fd_watchdog);
+    //printf(" WD = %d\n", (int)getpid()); fflush(stdout);
 
     fd_watchdog = open(watchdog_motZ,O_WRONLY | O_NONBLOCK);
     write(fd_watchdog,pid_w,strlen(pid_w)+1);
     close(fd_watchdog);
-
-    int fd_pid = open(fifo_watchdog, O_RDONLY);
-    read(fd_pid, pids, 80);
-    sscanf(pids, format_string_pid, &pidX_got, &pidZ_got);
-    close(fd_pid);
-    printf("%d\n", pidX_got); fflush(stdout);
-
 
     int flag = 0;
 

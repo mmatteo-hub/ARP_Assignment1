@@ -30,7 +30,7 @@ int main()
   pid_t child_pid;
 
   // pipe communicating with the inspection console
-  char * myfifo_inspection = "/tmp/fifo_inspection";
+  //char * myfifo_inspection = "/tmp/fifo_inspection";
 
   // pipe communicating with the command console
   char * myfifo_command = "/tmp/fifo_command";
@@ -40,13 +40,13 @@ int main()
   char * myfifo_motorZ = "/tmp/fifo_motZ";
 
   // pipe to pass pids of processes to the watchdog process
-  char * myfifo_watchdog = "/tmp/fifo_watchdog";
+  //char * myfifo_watchdog = "/tmp/fifo_watchdog";
 
-  mkfifo(myfifo_inspection,0666);
+  //mkfifo(myfifo_inspection,0666);
   mkfifo(myfifo_command,0666);
   mkfifo(myfifo_motorX,0666);
   mkfifo(myfifo_motorZ,0666);
-  mkfifo(myfifo_watchdog,0666);
+  //mkfifo(myfifo_watchdog,0666);
 
   char input_string[BUFFSIZE];
   char outup_string[80];
@@ -113,18 +113,18 @@ int main()
   printf("5th konsole (PID = %d)\n", pid5);
   fflush(stdout);
   // saving all 5 processes' pids
-  sprintf(outup_string, format_string, pid3, pid4);
+  //sprintf(outup_string, format_string, pid3, pid4);
 
   // passing pids to watchdog via pipe
-  fd_watchdog = open(myfifo_watchdog, O_WRONLY);
+  /*fd_watchdog = open(myfifo_watchdog, O_WRONLY);
   write(fd_watchdog, outup_string, strlen(outup_string)+1);
-  close(fd_watchdog);
+  close(fd_watchdog);*/
 
   // passing pids to inspection via pipe
-  fd_inspection = open(myfifo_inspection, O_WRONLY);
+  /*fd_inspection = open(myfifo_inspection, O_WRONLY);
   write(fd_inspection, outup_string, strlen(outup_string)+1);
   close(fd_inspection);
-
+*/
   printf ("Main program exiting...\n");
   fflush(stdout);
   return 0;

@@ -14,75 +14,93 @@ char input_string_x[80];
 char input_string_z[80];
 char format_string[80] = "%f";
 
-int pidX_got, pidZ_got;
+int pidX_got, pidZ_got, pidWD_got;
 int fdX, fdZ;
-char pids[80];
+char pid[80];
 char format_string_pid[80] = "%d,%d";
 
 int main(int argc, char * argv[])
 {
-    char * myfifo_inspection = "/tmp/fifo_inspection";
+    //char * myfifo_inspection = "/tmp/fifo_inspection";
 
     // the following pipes are used to read values of x and z from the motors
     char * fifo_motXinsp = "/tmp/motX_insp";
     char * fifo_motZinsp = "/tmp/motZ_insp";
+    char * pid_motX = "/tmp/pid_motX";
+    char * watchdog_insp = "/tmp/watchdog_insp";
 
-    mkfifo(myfifo_inspection, 0666);
+    //mkfifo(myfifo_inspection, 0666);
     mkfifo(fifo_motXinsp, 0666);
     mkfifo(fifo_motZinsp, 0666);
+    mkfifo(pid_motX,0666);
+    mkfifo(watchdog_insp,0666);
 
-    int fd_pids = open(myfifo_inspection, O_RDONLY);
-    read(fd_pids, pids, 80);
-    sscanf(pids, format_string_pid, &pidX_got, &pidZ_got);
-    close(fd_pids);
-    printf("%d\n", pidX_got); fflush(stdout);
+    // getting  motorX pid
+    int fd_pid = open(pid_motX, O_RDONLY);
+    read(fd_pid,pid,80);
+    pidX_got = atoi(pid);
+    close(fd_pid);
+    //printf("pid X = %d\n", pidX_got); fflush(stdout);
+
+    int fd_pid_w = open(watchdog_insp, O_RDONLY);
+    read(fd_pid_w,pid,80);
+    pidWD_got = atoi(pid);
+    close(fd_pid_w);
+    //printf("WD = %d\n", pidWD_got); fflush(stdout);
 
     char ch1[80];
     char out_str[80];
     char var;
     fd_set rfds;
+    fd_set rd_stdin;
     struct timeval tv;
-    int retval;
-    int fd_stdin;
+    int ret1, ret2;
+    int fd_stdin = fileno(stdin);
 
     while(1)
     {
         // using the pipe to read the position from motorX
         fd_x_read = open(fifo_motXinsp, O_RDONLY | O_NONBLOCK);
-        read(fd_x_read, input_string_x, 80);
+        
         // using the pipe to read the position from motorZ
         fd_z_read = open(fifo_motZinsp, O_RDONLY | O_NONBLOCK);
-        read(fd_z_read, input_string_z, 80);
        
         // initialise the set and add the file descriptors of the pipe to detect
         FD_ZERO(&rfds);
-        FD_SET(fd_stdin,&rfds);
+        FD_ZERO(&rd_stdin);
+        FD_SET(fd_x_read,&rfds);
+        FD_SET(fd_z_read,&rfds);
+        FD_SET(fileno(stdin),&rd_stdin);
 
         // setting the time select has to wait for
         tv.tv_sec = 0;
         tv.tv_usec = 0;
 
+        printf("PRESS: \n s to STOP both motors for an emergency\n r to RESET both motors\n");
+        fflush(stdout);
+
         printf("X = %s\nZ = %s\n", input_string_x, input_string_z);
         fflush(stdout);
         sleep(1);
 
-        printf("PRESS: \n s to STOP both motors for an emergency\n r to RESET both motors\n");
-        fflush(stdout);
-
         // calling the select to detect changes in the pipes
-        retval = select(FD_SETSIZE+1,&rfds,NULL,NULL,&tv);
+        ret1 = select(FD_SETSIZE+1,&rd_stdin,NULL,NULL,&tv);
+        ret2 = select(FD_SETSIZE+1,&rfds,NULL,NULL,&tv);
 
-        switch(retval)
+        switch(ret1)
         {
             case -1: // select error
-                perror("select()");
+                perror("Error during the program");
                 fflush(stdout);
                 break;
 
-            case 1:
+            case 0:
                 break;
 
-            case 0:
+            default:
+                ch1[0] = read(fd_stdin,out_str,80);
+                sprintf(out_str, format_string, ch1[0]); // prints the char according to a format string
+                var = ch1[0];
                 switch(var)
                 {
                     // reset
@@ -104,17 +122,31 @@ int main(int argc, char * argv[])
                         break;
 
                     default:
-                        printf("Wrong input, key pressed: %c\n", var);
-                        fflush(stdout);
                         break;
                 }
                 break;
-            default:
-                ch1[0] = read(fd_stdin,out_str,80);
-                sprintf(out_str, format_string, ch1[0]); // prints the char according to a format string
-                var = ch1[0];
-                break;
-        }
+            }
+            switch(ret2)
+            {
+                case -1:
+                    perror("Error during the program");
+                    fflush(stdout);
+                    break;
+                
+                case 0:
+                    break;
+                
+                default:
+                    if(FD_ISSET(fd_x_read,&rfds))
+                    {
+                        read(fd_x_read, input_string_x, 80);
+                    }
+                    if(FD_ISSET(fd_z_read,&rfds))
+                    {
+                        read(fd_z_read, input_string_z, 80);
+                    }
+                    break;
+            }
 
         // closing pipes
         close(fd_z_read);
