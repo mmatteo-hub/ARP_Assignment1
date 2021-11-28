@@ -25,14 +25,10 @@ void sig_handler(int signo)
     if (signo == SIGUSR1)
     {
         sig = 1; // reset
-        printf("sig received sig=%d\n",sig);
-        fflush(stdout);
     } 
     else if(signo == SIGUSR2)
     {
         sig = 2; // stop
-        printf("WOOOO received\n");
-        fflush(stdout);
     }
 }
 
@@ -41,9 +37,6 @@ int main(int argc, char * argv[])
     // signals from inspection
     signal(SIGUSR1,sig_handler);
     signal(SIGUSR2,sig_handler);
-
-    printf("sig=%d\n",sig);
-    fflush(stdout);
 
     char * fifo_valX = "/tmp/fifo_valX";
     char * fifo_motXinsp = "/tmp/motX_insp";
@@ -88,6 +81,7 @@ int main(int argc, char * argv[])
             default:
                 break;
         }
+        
         // open pipe
         fd_val = open(fifo_valX,O_RDONLY | O_NONBLOCK);
         fdX_write = open(fifo_motXinsp, O_WRONLY | O_NONBLOCK);
@@ -115,8 +109,8 @@ int main(int argc, char * argv[])
                             x_position -= 0.25;
                             sprintf(passVal,format_string,x_position);
                             write(fdX_write,passVal,strlen(passVal)+1);
-                            printf("X = %f\n",x_position);
-                            fflush(stdout);
+                            //printf("X = %f\n",x_position);
+                            //fflush(stdout);
                             sleep(1);
                         }
                         else
@@ -132,8 +126,8 @@ int main(int argc, char * argv[])
                             x_position += 0.25;
                             sprintf(passVal,format_string,x_position);
                             write(fdX_write,passVal,strlen(passVal)+1);
-                            printf("X = %f\n",x_position);
-                            fflush(stdout);
+                            //printf("X = %f\n",x_position);
+                            //fflush(stdout);
                             sleep(1);
                         }
                         else
