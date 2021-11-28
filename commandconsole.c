@@ -105,7 +105,7 @@ int main(int argc, char * argv[])
                     break;
             }
             // send a signal to the watchdog to restart the counter
-            kill(pid_wd,SIGUSR1);
+            kill(pid_wd,SIGALRM);
         }
         close(fdZ_write);
         close(fdX_write);

@@ -9,7 +9,7 @@
 #include <signal.h>
 
 #define secs 20
-
+time_t t;
 int flag = 0;
 sig_atomic_t sig;
 
@@ -23,13 +23,13 @@ float x_position, z_position;
 
 void sig_handler(int signo)
 {
-    if (signo == SIGUSR1) flag = 0;
+    if (signo == SIGALRM) t = time(NULL);//flag = 0;
 }
 
 int main(int argc, char * argv[])
 {
-    signal(SIGUSR1,sig_handler);
-    //int fd_exec;
+    t = time(NULL);
+    signal(SIGALRM,sig_handler);
     
     char * watchdog_insp = "/tmp/watchdog_insp";
     char * watchdog_motZ= "/tmp/watchdog_motZ";
@@ -70,23 +70,21 @@ int main(int argc, char * argv[])
     write(fd_wdComm,pid_w,strlen(pid_w)+1);
     close(fd_wdComm);
 
-    /* to cange
-    fd_watchdog = open(watchdog_motZ,O_WRONLY | O_NONBLOCK);
-    write(fd_watchdog,pid_w,strlen(pid_w)+1);
-    close(fd_watchdog);
-    */
-
     while(1)
     {   
-        do
+        if(difftime(time(NULL),t) > secs)
+        {
+            printf("No signals received: reset incoming!\n"); fflush(stdout);
+
+            kill(pidX_got,SIGUSR1);
+            kill(pidZ_got,SIGUSR1);
+            t = time(NULL);
+        }
+        /*do
         {   
             flag = 1;
             sleep(secs);
-        } while(!flag);
-
-        printf("No signals received: reset incoming!\n"); fflush(stdout);
-
-        kill(pidX_got,SIGUSR1);
-        kill(pidZ_got,SIGUSR1);
+        } while(flag);
+*/
     }
 }
