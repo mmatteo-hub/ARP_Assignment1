@@ -39,7 +39,7 @@ int main(int argc, char * argv[])
     {
         fdX_write = open(fifo_valX, O_WRONLY);
         fdZ_write = open(fifo_valZ, O_WRONLY);
-        system("clear");
+
         printf("PRESS: \n w to go UP\n z to go DOWN\n d to go RIGHT\n a to go LEFT\n\n Q to STOP X\n E to STOP Z\n");
         fflush(stdout);
         scanf("%s",ch1);
@@ -107,6 +107,8 @@ int main(int argc, char * argv[])
             // send a signal to the watchdog to restart the counter
             kill(pid_wd,SIGALRM);
         }
+        sleep(2);
+        system("clear");
         close(fdZ_write);
         close(fdX_write);
     }
