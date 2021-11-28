@@ -69,19 +69,7 @@ int main(int argc, char * argv[])
     char input_str;
 
     while(1)
-    {
-        switch(sig)
-        {
-            case 1: // reset
-                x_position = 0;
-                sprintf(passVal,format_string,x_position);
-                write(fdX_write,passVal,strlen(passVal)+1);
-                break;
-            
-            default:
-                break;
-        }
-        
+    {   
         // open pipe
         fd_val = open(fifo_valX,O_RDONLY | O_NONBLOCK);
         fdX_write = open(fifo_motXinsp, O_WRONLY | O_NONBLOCK);
@@ -93,6 +81,7 @@ int main(int argc, char * argv[])
         tv.tv_usec = 0;
 
         retval = select(FD_SETSIZE+1,&rfds,NULL,NULL,&tv);
+
         switch(retval)
         {
             case -1: // select error
@@ -159,6 +148,19 @@ int main(int argc, char * argv[])
                 sig = 0;
                 break;
         }
+
+        switch(sig)
+        {
+            case 1: // reset
+                x_position = 0;
+                sprintf(passVal,format_string,x_position);
+                write(fdX_write,passVal,strlen(passVal)+1);
+                break;
+            
+            default:
+                break;
+        }
+
         close(fdX_write);
         close(fd_val);
     }

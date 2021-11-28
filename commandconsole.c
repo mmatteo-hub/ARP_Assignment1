@@ -26,6 +26,7 @@ int main(int argc, char * argv[])
     mkfifo(fifo_valZ,0666);
     mkfifo(comm_wd,0666);
 
+    // get watchdog pid
     int fd_wdComm = open(comm_wd,O_RDONLY);
     read(fd_wdComm,pid_WD,strlen(pid_WD)+1);
     pid_wd = atof(pid_WD);
@@ -103,6 +104,8 @@ int main(int argc, char * argv[])
                     fflush(stdout);
                     break;
             }
+            // send a signal to the watchdog to restart the counter
+            kill(pid_wd,SIGUSR1);
         }
         //close(fdZ_write);
         close(fdX_write);

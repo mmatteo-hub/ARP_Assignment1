@@ -10,7 +10,7 @@
 
 #define secs 20
 
-//time_t t;
+int flag = 0;
 sig_atomic_t sig;
 
 int pidX_got, pidZ_got;
@@ -20,16 +20,15 @@ char format_string[80] = "%d";
 char format_string_pid[80] = "%d,%d";
 
 float x_position, z_position;
-/*
+
 void sig_handler(int signo)
 {
-    if (signo == SIGUSR1) printf("SIGUSR1 received!"); fflush(stdout);//sig = 0;
+    if (signo == SIGUSR1) flag = 0;
 }
-*/
+
 int main(int argc, char * argv[])
 {
-    //t = time(NULL);
-    //signal(SIGUSR1,sig_handler);
+    signal(SIGUSR1,sig_handler);
     //int fd_exec;
     
     char * watchdog_insp = "/tmp/watchdog_insp";
@@ -70,13 +69,10 @@ int main(int argc, char * argv[])
     close(fd_watchdog);
     */
 
-    int flag = 0;
-
     while(1)
     {   
         do
         {   
-            //sig = 1;
             flag = 1;
             sleep(secs);
         } while(!flag);
