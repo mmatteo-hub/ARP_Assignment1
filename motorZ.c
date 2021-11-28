@@ -8,23 +8,57 @@
 #include <signal.h>
 #include <sys/select.h>
 
-float z_position = 0; // motorX positiion
+float z_position = 0; // motorZ positiion
+
+int fd_val, fdZ_write;
+char pid_string[80];
+char format_pid_string[80] = "%d";
+
+char passVal[80];
+char format_string[80] = "%f";
+
+int sig = 0;
+
+// signals from inspection
+void sig_handler(int signo)
+{
+    if (signo == SIGUSR1)
+    {
+        sig = 1; // reset
+    } 
+    else if(signo == SIGUSR2)
+    {
+        sig = 2; // stop
+    }
+}
 
 int main(int argc, char * argv[])
 {
-    char * fifo_mot_commZ = "/tmp/comm_motZ";
-    char * fifo_valZ = "/tmp/fifo_valZ";
-    mkfifo(fifo_mot_commZ,0666);
-    mkfifo(fifo_valZ,0666);
+    // signals from inspection
+    signal(SIGUSR1,sig_handler);
+    signal(SIGUSR2,sig_handler);
 
-    // send the process pid via pipe to the command console
-    char pid_string[80];
-    char format_pid_string[80] = "%d";
-    int fd = open(fifo_mot_commZ,O_WRONLY);
-    sprintf(pid_string,format_pid_string,(int)getpid());
-    write(fd,pid_string,strlen(pid_string)+1);
-    close(fd);
-    
+    char * fifo_valZ = "/tmp/fifo_valZ";
+    char * fifo_motZinsp = "/tmp/motZ_insp";
+    char * pid_motZ = "/tmp/pid_motZ";
+    char * pid_motZ_watchdog = "/tmp/pid_motZ_watch";
+    mkfifo(fifo_valZ,0666);
+    mkfifo(fifo_motZinsp,0666);
+    mkfifo(pid_motZ,0666);
+    mkfifo(pid_motZ_watchdog,0666);
+
+    char pid[80];
+
+    // writing pid
+    int z_pid = open(pid_motZ, O_WRONLY);
+    sprintf(pid, format_pid_string, (int)getpid());
+    write(z_pid, pid, strlen(pid)+1);
+    close(z_pid);
+    int z_pid_w = open(pid_motZ_watchdog, O_WRONLY);
+    sprintf(pid, format_pid_string, (int)getpid());
+    write(z_pid_w, pid, strlen(pid)+1);
+    close(z_pid_w);
+    //printf("%d\n", (int)getpid()); fflush(stdout);
 
     // initialise struct for the select
     fd_set rfds;
@@ -32,13 +66,13 @@ int main(int argc, char * argv[])
     int retval;
 
     char input_string[80];
-    char format_string[80] = "%d";
     char input_str;
 
     while(1)
-    {
+    {   
         // open pipe
-        int fd_val = open(fifo_valZ,O_RDONLY);
+        fd_val = open(fifo_valZ,O_RDONLY | O_NONBLOCK);
+        fdZ_write = open(fifo_motZinsp, O_WRONLY | O_NONBLOCK);
 
         FD_ZERO(&rfds);
         FD_SET(fd_val,&rfds);
@@ -58,12 +92,16 @@ int main(int argc, char * argv[])
             case 0: // no new value
                 switch(atoi(input_string))
                 {
-                    case 122: // down
+                    // down
+                    case 122: // z
+                    case 90: // Z
                         if(z_position > 0)
                         {
                             z_position -= 0.25;
-                            printf("Z = %f\n",z_position);
-                            fflush(stdout);
+                            sprintf(passVal,format_string,z_position);
+                            write(fdZ_write,passVal,strlen(passVal)+1);
+                            //printf("Z = %f\n",z_position);
+                            //fflush(stdout);
                             sleep(1);
                         }
                         else
@@ -73,12 +111,16 @@ int main(int argc, char * argv[])
                         }
                         break;
 
-                    case 119: // up
+                    // up
+                    case 119: // w
+                    case 87: // W
                         if(z_position < 20)
                         {
                             z_position += 0.25;
-                            printf("Z = %f\n",z_position);
-                            fflush(stdout);
+                            sprintf(passVal,format_string,z_position);
+                            write(fdZ_write,passVal,strlen(passVal)+1);
+                            //printf("Z = %f\n",z_position);
+                            //fflush(stdout);
                             sleep(1);
                         }
                         else
@@ -88,16 +130,11 @@ int main(int argc, char * argv[])
                         }
                         break;
 
-                    case 114: // reset
-                        printf("Resetting...\n");
-                        fflush(stdout);
-                        z_position = 0;
-                        sleep(1);
-                        break;
-
-                    case 115: // stop
-                        printf("Stop Z = %f\n",z_position);
-                        fflush(stdout);
+                    // stop Z
+                    case 101: // e
+                    case 69: // E
+                        //printf("Stop X = %f\n",z_position);
+                        //fflush(stdout);
                         sleep(1);
                         break;
                     
@@ -108,8 +145,25 @@ int main(int argc, char * argv[])
 
             default: // got a new value
                 read(fd_val, input_string, 80);
+                sig = 0;
                 break;
         }
+
+        switch(sig)
+        {
+            case 1: // reset
+                z_position = 0;
+                sprintf(passVal,format_string,z_position);
+                write(fdZ_write,passVal,strlen(passVal)+1);
+                break;
+            
+            default:
+                break;
+        }
+
+        close(fdZ_write);
         close(fd_val);
     }
+    unlink(fifo_valZ);
+    unlink(fifo_motZinsp);
 }

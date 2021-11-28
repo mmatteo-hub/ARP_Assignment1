@@ -27,11 +27,13 @@ int main(int argc, char * argv[])
     char * fifo_motXinsp = "/tmp/motX_insp";
     char * fifo_motZinsp = "/tmp/motZ_insp";
     char * pid_motX = "/tmp/pid_motX";
+    char * pid_motZ = "/tmp/pid_motZ";
     char * watchdog_insp = "/tmp/watchdog_insp";
 
     //mkfifo(myfifo_inspection, 0666);
     mkfifo(fifo_motXinsp, 0666);
     mkfifo(fifo_motZinsp, 0666);
+    mkfifo(pid_motX,0666);
     mkfifo(pid_motX,0666);
     mkfifo(watchdog_insp,0666);
 
@@ -41,6 +43,12 @@ int main(int argc, char * argv[])
     pidX_got = atoi(pid);
     close(fd_pid);
     //printf("pid X = %d\n", pidX_got); fflush(stdout);
+
+    // getting  motorZ pid
+    fd_pid = open(pid_motZ, O_RDONLY);
+    read(fd_pid,pid,80);
+    pidZ_got = atoi(pid);
+    close(fd_pid);
 
     int fd_pid_w = open(watchdog_insp, O_RDONLY);
     read(fd_pid_w,pid,80);
@@ -111,7 +119,7 @@ int main(int argc, char * argv[])
                         printf("RESET WAS PRESSED\n");
                         fflush(stdout);
                         kill(pidX_got,SIGUSR1);
-                        //kill(pidZ_got,SIGUSR1);
+                        kill(pidZ_got,SIGUSR1);
                         break;
 
                     // emergency stop
@@ -120,7 +128,7 @@ int main(int argc, char * argv[])
                         printf("EMERGENCY STOP WAS PRESSED\n");
                         fflush(stdout);
                         kill(pidX_got,SIGUSR2);
-                        //kill(pidZ_got,SIGUSR2);
+                        kill(pidZ_got,SIGUSR2);
                         break;
 
                     default:

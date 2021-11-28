@@ -38,7 +38,7 @@ int main(int argc, char * argv[])
     while(1)
     {
         fdX_write = open(fifo_valX, O_WRONLY);
-        //fdZ_write = open(fifo_valZ, O_WRONLY);
+        fdZ_write = open(fifo_valZ, O_WRONLY);
         system("clear");
         printf("PRESS: \n w to go UP\n z to go DOWN\n d to go RIGHT\n a to go LEFT\n\n Q to STOP X\n E to STOP Z\n");
         fflush(stdout);
@@ -61,14 +61,14 @@ int main(int argc, char * argv[])
                 case 87: // case W
                     printf("UP WAS PRESSED\n");
                     fflush(stdout);
-                    //write(fdZ_write, out_str, strlen(out_str)+1);
+                    write(fdZ_write, out_str, strlen(out_str)+1);
                     break;
 
                 case 122 :// case z
                 case 90: // case Z
                     printf("DOWN WAS PRESSED\n");
                     fflush(stdout);
-                    //write(fdZ_write, out_str, strlen(out_str)+1);
+                    write(fdZ_write, out_str, strlen(out_str)+1);
                     break;
                     
                 case 97: // case a
@@ -96,7 +96,7 @@ int main(int argc, char * argv[])
                 case 69: // case E
                     printf("STOP Z WAS PRESSED\n");
                     fflush(stdout);
-                    //write(fdZ_write, out_str, strlen(out_str)+1);
+                    write(fdZ_write, out_str, strlen(out_str)+1);
                     break;
 
                 default:
@@ -107,9 +107,9 @@ int main(int argc, char * argv[])
             // send a signal to the watchdog to restart the counter
             kill(pid_wd,SIGUSR1);
         }
-        //close(fdZ_write);
+        close(fdZ_write);
         close(fdX_write);
     }
-    //unlink(fifo_valZ);
+    unlink(fifo_valZ);
     unlink(fifo_valX);
 }

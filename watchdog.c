@@ -34,11 +34,13 @@ int main(int argc, char * argv[])
     char * watchdog_insp = "/tmp/watchdog_insp";
     char * watchdog_motZ= "/tmp/watchdog_motZ";
     char * pid_motX_watchdog = "/tmp/pid_motX_watch";
+    char * pid_motZ_watchdog = "/tmp/pid_motZ_watch";
     char * comm_wd = "/tmp/commd_wd";
 
     mkfifo(watchdog_insp,0666);
     mkfifo(watchdog_motZ,0666);
     mkfifo(pid_motX_watchdog, 0666);
+    mkfifo(pid_motZ_watchdog, 0666);
     mkfifo(comm_wd,0666);
 
     char pid[80];
@@ -48,6 +50,11 @@ int main(int argc, char * argv[])
     pidX_got = atoi(pid);
     close(x_pid_w);
     //printf("pidX = %d\n", pidX_got); fflush(stdout);
+
+    int z_pid_w = open(pid_motZ_watchdog, O_RDONLY);
+    read(z_pid_w, pid, 80);
+    pidZ_got = atoi(pid);
+    close(z_pid_w);
 
     char pid_w[80];
 
@@ -80,6 +87,6 @@ int main(int argc, char * argv[])
         printf("No signals received: reset incoming!\n"); fflush(stdout);
 
         kill(pidX_got,SIGUSR1);
-        //kill(pidZ_got,SIGUSR1);
+        kill(pidZ_got,SIGUSR1);
     }
 }

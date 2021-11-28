@@ -96,7 +96,7 @@ int main()
   if (child_pid != 0) pid4 = child_pid;
   else
   {
-    if ( execl ("./motorZ","./motorZ" , (char*) NULL) == -1) perror("exec failed");
+    if ( execl ("/usr/bin/konsole","/usr/bin/konsole",  "--hold", "-e", "./motorZ", (char*) NULL) == -1) perror("exec failed");
   exit(1);
   }
   printf("4th konsole (PID = %d)\n", pid4);
