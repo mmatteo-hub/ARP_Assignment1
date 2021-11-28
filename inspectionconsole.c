@@ -65,7 +65,6 @@ int main(int argc, char * argv[])
 
     while(1)
     {
-        system("clear");
         // using the pipe to read the position from motorX
         fd_x_read = open(fifo_motXinsp, O_RDONLY | O_NONBLOCK);
         
@@ -82,6 +81,8 @@ int main(int argc, char * argv[])
         // setting the time select has to wait for
         tv.tv_sec = 0;
         tv.tv_usec = 0;
+
+        system("clear");
 
         printf("X = %s |  Z = %s\n", input_string_x, input_string_z);
         fflush(stdout);
@@ -148,10 +149,7 @@ int main(int argc, char * argv[])
                     perror("Error during the program");
                     fflush(stdout);
                     break;
-                
-                case 0:
-                    break;
-                
+
                 default:
                     if(FD_ISSET(fd_x_read,&rfds))
                     {
