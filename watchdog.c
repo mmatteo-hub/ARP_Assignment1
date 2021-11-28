@@ -65,7 +65,7 @@ int main(int argc, char * argv[])
     int flag = 0;
 
     while(1)
-    {
+    {   
         do
         {   
             //sig = 1;
