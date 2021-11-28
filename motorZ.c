@@ -10,6 +10,22 @@
 
 float z_position = 0; // motorZ positiion
 
+// error on position
+float randomErr()
+{
+    srand(time(NULL));
+    return (((double)rand()) / ((double)RAND_MAX)) * (double)0.25;
+}
+
+// sign
+int sign()
+{
+    srand(time(NULL));
+    float n = (double)rand() / (double)RAND_MAX;
+    if(n >  0.5) return 1;
+    else return 0;
+}
+
 int fd_valZ, fdZ_write;
 char pid_string[80];
 char format_pid_string[80] = "%d";
