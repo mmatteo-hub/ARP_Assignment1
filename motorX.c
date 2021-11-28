@@ -83,7 +83,6 @@ int main(int argc, char * argv[])
                 x_position = 0;
                 sprintf(passVal,format_string,x_position);
                 write(fdX_write,passVal,strlen(passVal)+1);
-                sig = 0;
                 break;
             
             default:
@@ -100,7 +99,6 @@ int main(int argc, char * argv[])
         tv.tv_usec = 0;
 
         retval = select(FD_SETSIZE+1,&rfds,NULL,NULL,&tv);
-
         switch(retval)
         {
             case -1: // select error
@@ -165,6 +163,7 @@ int main(int argc, char * argv[])
 
             default: // got a new value
                 read(fd_val, input_string, 80);
+                sig = 0;
                 break;
         }
         close(fdX_write);
