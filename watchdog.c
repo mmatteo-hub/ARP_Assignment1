@@ -10,8 +10,6 @@
 
 #define secs 20
 time_t t;
-int flag = 0;
-sig_atomic_t sig;
 
 int pidX_got, pidZ_got;
 int fdX, fdZ;
@@ -23,7 +21,7 @@ float x_position, z_position;
 
 void sig_handler(int signo)
 {
-    if (signo == SIGALRM) t = time(NULL);//flag = 0;
+    if (signo == SIGALRM) t = time(NULL);
 }
 
 int main(int argc, char * argv[])
