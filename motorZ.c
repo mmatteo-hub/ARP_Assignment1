@@ -10,7 +10,7 @@
 
 float z_position = 0; // motorZ positiion
 
-int fd_val, fdZ_write;
+int fd_valZ, fdZ_write;
 char pid_string[80];
 char format_pid_string[80] = "%d";
 
@@ -71,11 +71,11 @@ int main(int argc, char * argv[])
     while(1)
     {   
         // open pipe
-        fd_val = open(fifo_valZ,O_RDONLY | O_NONBLOCK);
+        fd_valZ = open(fifo_valZ,O_RDONLY | O_NONBLOCK);
         fdZ_write = open(fifo_motZinsp, O_WRONLY | O_NONBLOCK);
 
         FD_ZERO(&rfds);
-        FD_SET(fd_val,&rfds);
+        FD_SET(fd_valZ,&rfds);
 
         tv.tv_sec = 0;
         tv.tv_usec = 0;
@@ -144,7 +144,7 @@ int main(int argc, char * argv[])
                 break;
 
             default: // got a new value
-                read(fd_val, input_string, 80);
+                read(fd_valZ, input_string, 80);
                 sig = 0;
                 break;
         }
@@ -162,7 +162,7 @@ int main(int argc, char * argv[])
         }
 
         close(fdZ_write);
-        close(fd_val);
+        close(fd_valZ);
     }
     unlink(fifo_valZ);
     unlink(fifo_motZinsp);

@@ -10,7 +10,7 @@
 
 float x_position = 0; // motorX positiion
 
-int fd_val, fdX_write;
+int fd_valX, fdX_write;
 char pid_string[80];
 char format_pid_string[80] = "%d";
 
@@ -71,11 +71,11 @@ int main(int argc, char * argv[])
     while(1)
     {   
         // open pipe
-        fd_val = open(fifo_valX,O_RDONLY | O_NONBLOCK);
+        fd_valX = open(fifo_valX,O_RDONLY | O_NONBLOCK);
         fdX_write = open(fifo_motXinsp, O_WRONLY | O_NONBLOCK);
 
         FD_ZERO(&rfds);
-        FD_SET(fd_val,&rfds);
+        FD_SET(fd_valX,&rfds);
 
         tv.tv_sec = 0;
         tv.tv_usec = 0;
@@ -144,7 +144,7 @@ int main(int argc, char * argv[])
                 break;
 
             default: // got a new value
-                read(fd_val, input_string, 80);
+                read(fd_valX, input_string, 80);
                 sig = 0;
                 break;
         }
@@ -162,7 +162,7 @@ int main(int argc, char * argv[])
         }
 
         close(fdX_write);
-        close(fd_val);
+        close(fd_valX);
     }
     unlink(fifo_valX);
     unlink(fifo_motXinsp);
