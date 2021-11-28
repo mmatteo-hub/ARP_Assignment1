@@ -80,11 +80,5 @@ int main(int argc, char * argv[])
             kill(pidZ_got,SIGUSR1);
             t = time(NULL);
         }
-        /*do
-        {   
-            flag = 1;
-            sleep(secs);
-        } while(flag);
-*/
     }
 }
