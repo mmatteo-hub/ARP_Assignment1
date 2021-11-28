@@ -32,7 +32,7 @@ int main(int argc, char * argv[])
         fdX_write = open(fifo_valX, O_WRONLY);
         //fdZ_write = open(fifo_valZ, O_WRONLY);
         system("clear");
-        printf("PRESS: \n w to go UP\n z to go DOWN\n d to go RIGHT\n a to go LEFT\n\n R to RESET\n S to STOP\n");
+        printf("PRESS: \n w to go UP\n z to go DOWN\n d to go RIGHT\n a to go LEFT\n\n Q to STOP X\n E to STOP Z\n");
         fflush(stdout);
         scanf("%s",ch1);
 

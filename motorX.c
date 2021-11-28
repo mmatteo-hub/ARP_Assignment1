@@ -103,7 +103,9 @@ int main(int argc, char * argv[])
             case 0: // no new value
                 switch(atoi(input_string))
                 {
-                    case 97: // left
+                    // left
+                    case 65: // A
+                    case 97: // a
                         if(x_position > 0)
                         {
                             x_position -= 0.25;
@@ -120,7 +122,9 @@ int main(int argc, char * argv[])
                         }
                         break;
 
-                    case 100: // right
+                    // right
+                    case 68: // D
+                    case 100: // d
                         if(x_position < 20)
                         {
                             x_position += 0.25;
@@ -137,16 +141,11 @@ int main(int argc, char * argv[])
                         }
                         break;
 
-                    case 114: // reset
-                        printf("Resetting...\n");
-                        fflush(stdout);
-                        x_position = 0;
-                        sleep(1);
-                        break;
-
-                    case 115: // stop
-                        printf("Stop X = %f\n",x_position);
-                        fflush(stdout);
+                    // stop X
+                    case 81: // Q
+                    case 113: // q
+                        //printf("Stop X = %f\n",x_position);
+                        //fflush(stdout);
                         sleep(1);
                         break;
                     
