@@ -59,6 +59,7 @@ int main(int argc, char * argv[])
 
     while(1)
     {
+        system("clear");
         // using the pipe to read the position from motorX
         fd_x_read = open(fifo_motXinsp, O_RDONLY | O_NONBLOCK);
         
@@ -76,11 +77,12 @@ int main(int argc, char * argv[])
         tv.tv_sec = 0;
         tv.tv_usec = 0;
 
+        printf("X = %s |  Z = %s\n", input_string_x, input_string_z);
+        fflush(stdout);
+
         printf("PRESS: \n s to STOP both motors for an emergency\n r to RESET both motors\n");
         fflush(stdout);
 
-        printf("X = %s\nZ = %s\n", input_string_x, input_string_z);
-        fflush(stdout);
         sleep(1);
 
         // calling the select to detect changes in the pipes
