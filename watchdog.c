@@ -47,7 +47,6 @@ int main(int argc, char * argv[])
     read(x_pid_w, pid, 80);
     pidX_got = atoi(pid);
     close(x_pid_w);
-    //printf("pidX = %d\n", pidX_got); fflush(stdout);
 
     int z_pid_w = open(pid_motZ_watchdog, O_RDONLY);
     read(z_pid_w, pid, 80);
@@ -61,7 +60,6 @@ int main(int argc, char * argv[])
     sprintf(pid_w,format_string,(int)getpid());
     write(fd_watchdog,pid_w,strlen(pid_w)+1);
     close(fd_watchdog);
-    //printf(" WD = %d\n", (int)getpid()); fflush(stdout);
 
     int fd_wdComm = open(comm_wd,O_WRONLY);
     sprintf(pid_w,format_string,(int)getpid());
