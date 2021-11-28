@@ -52,7 +52,6 @@ int main(int argc, char * argv[])
     sprintf(pid, format_pid_string, (int)getpid());
     write(z_pid_w, pid, strlen(pid)+1);
     close(z_pid_w);
-    //printf("%d\n", (int)getpid()); fflush(stdout);
 
     // initialise struct for the select
     fd_set rfds;
@@ -94,8 +93,6 @@ int main(int argc, char * argv[])
                             z_position -= 0.25;
                             sprintf(passVal,format_string,z_position);
                             write(fdZ_write,passVal,strlen(passVal)+1);
-                            //printf("Z = %f\n",z_position);
-                            //fflush(stdout);
                             sleep(1);
                         }
                         else
@@ -113,8 +110,6 @@ int main(int argc, char * argv[])
                             z_position += 0.25;
                             sprintf(passVal,format_string,z_position);
                             write(fdZ_write,passVal,strlen(passVal)+1);
-                            //printf("Z = %f\n",z_position);
-                            //fflush(stdout);
                             sleep(1);
                         }
                         else
@@ -127,8 +122,6 @@ int main(int argc, char * argv[])
                     // stop Z
                     case 101: // e
                     case 69: // E
-                        //printf("Stop X = %f\n",z_position);
-                        //fflush(stdout);
                         sleep(1);
                         break;
                     
@@ -153,7 +146,6 @@ int main(int argc, char * argv[])
                 break;
             
             case 2: // stop
-                sleep(1);
                 break;
             
             default:

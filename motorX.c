@@ -52,7 +52,6 @@ int main(int argc, char * argv[])
     sprintf(pid, format_pid_string, (int)getpid());
     write(x_pid_w, pid, strlen(pid)+1);
     close(x_pid_w);
-    //printf("%d\n", (int)getpid()); fflush(stdout);
 
     // initialise struct for the select
     fd_set rfds;
@@ -94,8 +93,6 @@ int main(int argc, char * argv[])
                             x_position -= 0.25;
                             sprintf(passVal,format_string,x_position);
                             write(fdX_write,passVal,strlen(passVal)+1);
-                            //printf("X = %f\n",x_position);
-                            //fflush(stdout);
                             sleep(1);
                         }
                         else
@@ -113,8 +110,6 @@ int main(int argc, char * argv[])
                             x_position += 0.25;
                             sprintf(passVal,format_string,x_position);
                             write(fdX_write,passVal,strlen(passVal)+1);
-                            //printf("X = %f\n",x_position);
-                            //fflush(stdout);
                             sleep(1);
                         }
                         else
@@ -127,8 +122,6 @@ int main(int argc, char * argv[])
                     // stop X
                     case 81: // Q
                     case 113: // q
-                        //printf("Stop X = %f\n",x_position);
-                        //fflush(stdout);
                         sleep(1);
                         break;
                     
@@ -153,7 +146,6 @@ int main(int argc, char * argv[])
                 break;
             
             case 2: // stop
-                sleep(1);
                 break;
             
             default:
