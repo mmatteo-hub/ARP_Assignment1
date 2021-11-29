@@ -8,7 +8,7 @@
 #include <time.h>
 #include <signal.h>
 
-#define secs 20
+#define secs 60
 time_t t;
 
 int pidX_got, pidZ_got;
