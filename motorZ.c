@@ -11,8 +11,8 @@
 
 #define increment 0.25
 #define max_err 0.01
-#define max_pose 25
-#define min_pose 0
+#define max_pos 25
+#define min_pos 0
 
 float z_position = 0; // motorZ positiion
 
@@ -115,7 +115,7 @@ int main(int argc, char * argv[])
                         // down
                         case 122: // z
                         case 90: // Z
-                            if(z_position - (increment + err) > min_pose)
+                            if(z_position - (increment + err) > min_pos)
                             {
                                 if(s)
                                 {
@@ -143,12 +143,22 @@ int main(int argc, char * argv[])
                         // up
                         case 119: // w
                         case 87: // W
-                            if(z_position + (increment + err) < max_pose)
+                            if(z_position + (increment + err) < max_pos)
                             {
-                                z_position += 0.25;
-                                sprintf(passVal,format_string,z_position);
-                                write(fdZ_write,passVal,strlen(passVal)+1);
-                                sleep(1);
+                                if(s)
+                                {
+                                    z_position += (increment + err);
+                                    sprintf(passVal,format_string,z_position);
+                                    write(fdZ_write,passVal,strlen(passVal)+1);
+                                    sleep(1);
+                                }
+                                else if(!s)
+                                {
+                                    z_position += (increment - err);
+                                    sprintf(passVal,format_string,z_position);
+                                    write(fdZ_write,passVal,strlen(passVal)+1);
+                                    sleep(1);
+                                }
                             }
                             else
                             {
