@@ -1,7 +1,8 @@
-gcc src/executor.c -o executor
-gcc src/commandconsole.c -o commandconsole
-gcc src/inspectionconsole.c -o inspectionconsole
-gcc src/motorX.c -o motorX
-gcc src/motorZ.c -o motorZ
-gcc src/watchdog.c -o watchdog
-./executor
+mkdir exe
+gcc src/executor.c -o exe/executor
+gcc src/commandconsole.c -o exe/commandconsole
+gcc src/inspectionconsole.c -o exe/inspectionconsole
+gcc src/motorX.c -o exe/motorX
+gcc src/motorZ.c -o exe/motorZ
+gcc src/watchdog.c -o exe/watchdog
+./exe/executor

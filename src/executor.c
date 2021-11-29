@@ -55,7 +55,7 @@ int main()
   if (child_pid != 0) pid1 = child_pid;
   else
   {
-    if ( execl ("/usr/bin/konsole", "/usr/bin/konsole", "--hold",  "-e", "./commandconsole", (char*) NULL) == -1) perror("exec failed");
+    if ( execl ("/usr/bin/konsole", "/usr/bin/konsole", "--hold",  "-e", "./exe/commandconsole", (char*) NULL) == -1) perror("exec failed");
 	exit(1);
   }
   printf("1st konsole (PID = %d)\n", pid1);
@@ -66,7 +66,7 @@ int main()
   if (child_pid != 0) pid2 = child_pid;
   else
   {
-    if ( execl ("/usr/bin/konsole", "/usr/bin/konsole", "--hold",  "-e", "./inspectionconsole", (char*) NULL) == -1) perror("exec failed");
+    if ( execl ("/usr/bin/konsole", "/usr/bin/konsole", "--hold",  "-e", "./exe/inspectionconsole", (char*) NULL) == -1) perror("exec failed");
   exit(1);
   }
   printf("2nd konsole (PID = %d)\n", pid2);
@@ -77,7 +77,7 @@ int main()
   if (child_pid != 0) pid3 = child_pid;
   else
   {
-    if ( execl ("/usr/bin/konsole","/usr/bin/konsole",  "--hold", "-e", "./motorX", (char*) NULL) == -1) perror("exec failed");
+    if ( execl ("/usr/bin/konsole","/usr/bin/konsole",  "--hold", "-e", "./exe/motorX", (char*) NULL) == -1) perror("exec failed");
   exit(1);
   }
   printf("3rd konsole (PID = %d)\n", pid3);
@@ -88,7 +88,7 @@ int main()
   if (child_pid != 0) pid4 = child_pid;
   else
   {
-    if ( execl ("/usr/bin/konsole","/usr/bin/konsole",  "--hold", "-e", "./motorZ", (char*) NULL) == -1) perror("exec failed");
+    if ( execl ("/usr/bin/konsole","/usr/bin/konsole",  "--hold", "-e", "./exe/motorZ", (char*) NULL) == -1) perror("exec failed");
   exit(1);
   }
   printf("4th konsole (PID = %d)\n", pid4);
@@ -99,7 +99,7 @@ int main()
   if (child_pid != 0) pid5 = child_pid;
   else
   {
-    if ( execl ("/usr/bin/konsole","/usr/bin/konsole",  "--hold", "-e", "./watchdog", (char*) NULL) == -1) perror("exec failed");
+    if ( execl ("/usr/bin/konsole","/usr/bin/konsole",  "--hold", "-e", "./exe/watchdog", (char*) NULL) == -1) perror("exec failed");
   exit(1);
   }
   printf("5th konsole (PID = %d)\n", pid5);
