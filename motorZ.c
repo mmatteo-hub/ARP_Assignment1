@@ -112,12 +112,22 @@ int main(int argc, char * argv[])
                         // down
                         case 122: // z
                         case 90: // Z
-                            if(z_position > 0)
+                            if(z_position - (increment + err) > 0)
                             {
-                                z_position -= 0.25;
-                                sprintf(passVal,format_string,z_position);
-                                write(fdZ_write,passVal,strlen(passVal)+1);
-                                sleep(1);
+                                if(s)
+                                {
+                                    z_position -= (increment+err);
+                                    sprintf(passVal,format_string,z_position);
+                                    write(fdZ_write,passVal,strlen(passVal)+1);
+                                    sleep(1);
+                                }
+                                else if(!s)
+                                {
+                                    z_position -= (increment-err);
+                                    sprintf(passVal,format_string,z_position);
+                                    write(fdZ_write,passVal,strlen(passVal)+1);
+                                    sleep(1);
+                                }
                             }
                             else
                             {

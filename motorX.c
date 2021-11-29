@@ -113,7 +113,7 @@ int main(int argc, char * argv[])
                         // left
                         case 65: // A
                         case 97: // a
-                            if(x_position - (increment + err) > 0)
+                            if(x_position - (increment + err) > min_pose)
                             {
                                 if(s)
                                 {
@@ -141,7 +141,7 @@ int main(int argc, char * argv[])
                         // right
                         case 68: // D
                         case 100: // d
-                            if(x_position + (increment + err) < 25)
+                            if(x_position + (increment + err) < max_pos)
                             {
                                 if(s)
                                 {
