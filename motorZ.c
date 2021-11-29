@@ -9,10 +9,12 @@
 #include <sys/select.h>
 #include <time.h>
 
+#define increment 0.25
+
 float z_position = 0; // motorZ positiion
 
 // error on position
-float randomErr()
+double randomErr()
 {
     srand(time(NULL));
     return (((double)rand()) / ((double)RAND_MAX)) * (double)0.10;
@@ -80,6 +82,8 @@ int main(int argc, char * argv[])
 
     while(1)
     {   
+        int s = sign();
+        double err = randomErr();
         // open pipe
         fd_valZ = open(fifo_valZ,O_RDONLY | O_NONBLOCK);
         fdZ_write = open(fifo_motZinsp, O_WRONLY | O_NONBLOCK);

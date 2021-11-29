@@ -10,6 +10,7 @@
 #include <time.h>
 
 #define increment 0.25
+#define max_err 0.01
 
 
 float x_position = 0; // motorX positiion
@@ -18,7 +19,7 @@ float x_position = 0; // motorX positiion
 double randomErr()
 {
     srand(time(NULL));
-    return (((double)rand()) / ((double)RAND_MAX)) * (double)0.01;
+    return (((double)rand()) / ((double)RAND_MAX)) * (double)max_err;
 }
 
 // sign
