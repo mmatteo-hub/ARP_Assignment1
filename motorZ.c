@@ -10,6 +10,9 @@
 #include <time.h>
 
 #define increment 0.25
+#define max_err 0.01
+#define max_pose 25
+#define min_pose 0
 
 float z_position = 0; // motorZ positiion
 
@@ -112,7 +115,7 @@ int main(int argc, char * argv[])
                         // down
                         case 122: // z
                         case 90: // Z
-                            if(z_position - (increment + err) > 0)
+                            if(z_position - (increment + err) > min_pose)
                             {
                                 if(s)
                                 {
@@ -140,7 +143,7 @@ int main(int argc, char * argv[])
                         // up
                         case 119: // w
                         case 87: // W
-                            if(z_position < 20)
+                            if(z_position + (increment + err) < max_pose)
                             {
                                 z_position += 0.25;
                                 sprintf(passVal,format_string,z_position);
