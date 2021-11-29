@@ -15,7 +15,7 @@ float z_position = 0; // motorZ positiion
 float randomErr()
 {
     srand(time(NULL));
-    return (((double)rand()) / ((double)RAND_MAX)) * (double)0.25;
+    return (((double)rand()) / ((double)RAND_MAX)) * (double)0.10;
 }
 
 // sign
@@ -117,6 +117,7 @@ int main(int argc, char * argv[])
                             }
                             else
                             {
+                                system("clear");
                                 printf("Z cannot be decreased any more\n");
                                 fflush(stdout);
                             }
@@ -134,6 +135,7 @@ int main(int argc, char * argv[])
                             }
                             else
                             {
+                                system("clear");
                                 printf("Z cannot be increased any more\n");
                                 fflush(stdout);
                             }

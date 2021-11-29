@@ -9,6 +9,8 @@
 #include <sys/select.h>
 #include <time.h>
 
+#define increment 0.25
+
 
 float x_position = 0; // motorX positiion
 
@@ -16,7 +18,7 @@ float x_position = 0; // motorX positiion
 float randomErr()
 {
     srand(time(NULL));
-    return (((double)rand()) / ((double)RAND_MAX)) * (double)0.25;
+    return (((double)rand()) / ((double)RAND_MAX)) * (double)0.10;
 }
 
 // sign
@@ -80,7 +82,8 @@ int main(int argc, char * argv[])
     char input_str;
 
     while(1)
-    {   
+    {   int s = sign();
+        int err = randomErr();
         // open pipe
         fd_valX = open(fifo_valX,O_RDONLY | O_NONBLOCK);
         fdX_write = open(fifo_motXinsp, O_WRONLY | O_NONBLOCK);
@@ -109,15 +112,26 @@ int main(int argc, char * argv[])
                         // left
                         case 65: // A
                         case 97: // a
-                            if(x_position > 0)
+                            if(x_position - (increment + err) > 0)
                             {
-                                x_position -= 0.25;
-                                sprintf(passVal,format_string,x_position);
-                                write(fdX_write,passVal,strlen(passVal)+1);
-                                sleep(1);
+                                if(s)
+                                {
+                                    x_position -= (increment+err);
+                                    sprintf(passVal,format_string,x_position);
+                                    write(fdX_write,passVal,strlen(passVal)+1);
+                                    sleep(1);
+                                }
+                                else if(!s)
+                                {
+                                    x_position -= (increment-err);
+                                    sprintf(passVal,format_string,x_position);
+                                    write(fdX_write,passVal,strlen(passVal)+1);
+                                    sleep(1);
+                                }
                             }
                             else
                             {
+                                system("clear");
                                 printf("X cannot be decreased any more\n");
                                 fflush(stdout);
                             }
@@ -126,15 +140,26 @@ int main(int argc, char * argv[])
                         // right
                         case 68: // D
                         case 100: // d
-                            if(x_position < 20)
+                            if(x_position + (increment + err) < 25)
                             {
-                                x_position += 0.25;
-                                sprintf(passVal,format_string,x_position);
-                                write(fdX_write,passVal,strlen(passVal)+1);
-                                sleep(1);
+                                if(s)
+                                {
+                                    x_position += (increment + err);
+                                    sprintf(passVal,format_string,x_position);
+                                    write(fdX_write,passVal,strlen(passVal)+1);
+                                    sleep(1);
+                                }
+                                else if(!s)
+                                {
+                                    x_position += (increment - err);
+                                    sprintf(passVal,format_string,x_position);
+                                    write(fdX_write,passVal,strlen(passVal)+1);
+                                    sleep(1);
+                                }
                             }
                             else
                             {
+                                system("clear");
                                 printf("X cannot be increased any more\n");
                                 fflush(stdout);
                             }
