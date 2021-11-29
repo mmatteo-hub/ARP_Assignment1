@@ -91,7 +91,7 @@ int main(int argc, char * argv[])
         printf("%sX = %s |  Z = %s\n", KNRM, input_string_x, input_string_z);
         fflush(stdout);
 
-        printf("%sPRESS: \n %sS to STOP both motors for an emergency\n %sR to RESET both motors\n%s", KNRM, KRED, KGRN, KNRM);
+        printf("%sPRESS: \n %sS (o s) to STOP both motors for an emergency\n %sR (or r) to RESET both motors\n %s", KNRM, KRED, KGRN, KNRM);
         fflush(stdout);
 
         sleep(1);
@@ -140,6 +140,16 @@ int main(int argc, char * argv[])
                             kill(pidX_got,SIGUSR2);
                             kill(pidZ_got,SIGUSR2);
                             break;
+
+                        // terminate process
+                        /*case 116: // case t
+                        case 84: // case T
+                            kill(pidX_got,SIGKILL);
+                            kill(pidZ_got,SIGKILL);
+                            kill(pidWD_got,SIGKILL);
+                            kill(pid_comm,SIGKILL);
+                            exit(0);
+                            break;*/
 
                         default:
                             break;

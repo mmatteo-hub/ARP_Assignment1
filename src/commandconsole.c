@@ -18,6 +18,7 @@ char format_str_var[80] = "%c";
 char pid_motX[80];
 char pid_motZ[80];
 char pid_WD[80];
+char pid[80];
 int pidX_got, pidZ_got, pid_wd;
 
 int main(int argc, char * argv[])
@@ -45,7 +46,7 @@ int main(int argc, char * argv[])
         fdX_write = open(fifo_valX, O_WRONLY);
         fdZ_write = open(fifo_valZ, O_WRONLY);
 
-        printf("%sPRESS: \n w to go UP\n z to go DOWN\n d to go RIGHT\n a to go LEFT\n\n Q to STOP X\n E to STOP Z\n",KNRM);
+        printf("%sPRESS: \n W (or w) to go UP\n Z (or z) to go DOWN\n D (or d) to go RIGHT\n A (or a) to go LEFT\n\n Q (or q) to STOP X\n E (or e) to STOP Z\n",KNRM);
         fflush(stdout);
         scanf("%s",ch1);
 

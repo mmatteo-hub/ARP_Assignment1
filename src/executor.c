@@ -5,8 +5,15 @@
 #include <sys/types.h> 
 #include <unistd.h> 
 #include <stdlib.h>
+#include <signal.h>
 
 #define BUFFSIZE 80
+
+#define KNRM  "\x1B[0m"
+#define KYEL  "\x1B[33m"
+
+// defining pids for 5 processes
+int pid1, pid2, pid3, pid4, pid5;
 
 // function to start the execution of the processes
 int spawn(const char * program, char ** arg_list) 
@@ -20,6 +27,15 @@ int spawn(const char * program, char ** arg_list)
     perror("exec failed");
     return 1;
   }
+}
+
+void kill_processes()
+{
+  kill(pid1,SIGKILL);
+  kill(pid2,SIGKILL);
+  kill(pid3,SIGKILL);
+  kill(pid4,SIGKILL);
+  kill(pid5,SIGKILL);
 }
 
 int main() 
@@ -45,9 +61,6 @@ int main()
   char motor_pids_string[80];
   char out_str[80];
   char format_string[80] = "%d,%d";
-  
-  // creation of 5 processes
-  int pid1, pid2, pid3, pid4, pid5;
   
   // execl with the params for the konsoles
   child_pid = fork();
@@ -77,7 +90,7 @@ int main()
   if (child_pid != 0) pid3 = child_pid;
   else
   {
-    if ( execl ("/usr/bin/konsole","/usr/bin/konsole",  "--hold", "-e", "./exe/motorX", (char*) NULL) == -1) perror("exec failed");
+    if ( execl ("./exe/motorX", "./exe/motorX", (char*) NULL) == -1) perror("exec failed");
   exit(1);
   }
   printf("3rd konsole (PID = %d)\n", pid3);
@@ -88,7 +101,7 @@ int main()
   if (child_pid != 0) pid4 = child_pid;
   else
   {
-    if ( execl ("/usr/bin/konsole","/usr/bin/konsole",  "--hold", "-e", "./exe/motorZ", (char*) NULL) == -1) perror("exec failed");
+    if ( execl ("./exe/motorZ", "./exe/motorZ", (char*) NULL) == -1) perror("exec failed");
   exit(1);
   }
   printf("4th konsole (PID = %d)\n", pid4);
@@ -99,13 +112,21 @@ int main()
   if (child_pid != 0) pid5 = child_pid;
   else
   {
-    if ( execl ("/usr/bin/konsole","/usr/bin/konsole",  "--hold", "-e", "./exe/watchdog", (char*) NULL) == -1) perror("exec failed");
+    if ( execl ("./exe/watchdog", "./exe/watchdog", (char*) NULL) == -1) perror("exec failed");
   exit(1);
   }
   printf("5th konsole (PID = %d)\n", pid5);
   fflush(stdout);
+
+  char inputStr[80];
   
-  printf ("Main program exiting...\n");
-  fflush(stdout);
+  do
+  {
+    printf ("\n%sPress T to TERMINATE the program\n",KYEL);
+    scanf("%s",inputStr);
+  }
+  while(strcmp(inputStr, "T") != 0);
+
+  kill_processes();
   return 0;
 }
