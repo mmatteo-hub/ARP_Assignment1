@@ -99,50 +99,54 @@ int main(int argc, char * argv[])
                 break;
 
             case 0: // no new value
-                switch(atoi(input_string))
+                if(sig || sig == 2) break;
+                else
                 {
-                    // left
-                    case 65: // A
-                    case 97: // a
-                        if(x_position > 0)
-                        {
-                            x_position -= 0.25;
-                            sprintf(passVal,format_string,x_position);
-                            write(fdX_write,passVal,strlen(passVal)+1);
-                            sleep(1);
-                        }
-                        else
-                        {
-                            printf("X cannot be decreased any more\n");
-                            fflush(stdout);
-                        }
-                        break;
+                    switch(atoi(input_string))
+                    {
+                        // left
+                        case 65: // A
+                        case 97: // a
+                            if(x_position > 0)
+                            {
+                                x_position -= 0.25;
+                                sprintf(passVal,format_string,x_position);
+                                write(fdX_write,passVal,strlen(passVal)+1);
+                                sleep(1);
+                            }
+                            else
+                            {
+                                printf("X cannot be decreased any more\n");
+                                fflush(stdout);
+                            }
+                            break;
 
-                    // right
-                    case 68: // D
-                    case 100: // d
-                        if(x_position < 20)
-                        {
-                            x_position += 0.25;
-                            sprintf(passVal,format_string,x_position);
-                            write(fdX_write,passVal,strlen(passVal)+1);
-                            sleep(1);
-                        }
-                        else
-                        {
-                            printf("X cannot be increased any more\n");
-                            fflush(stdout);
-                        }
-                        break;
+                        // right
+                        case 68: // D
+                        case 100: // d
+                            if(x_position < 20)
+                            {
+                                x_position += 0.25;
+                                sprintf(passVal,format_string,x_position);
+                                write(fdX_write,passVal,strlen(passVal)+1);
+                                sleep(1);
+                            }
+                            else
+                            {
+                                printf("X cannot be increased any more\n");
+                                fflush(stdout);
+                            }
+                            break;
 
-                    // stop X
-                    case 81: // Q
-                    case 113: // q
-                        sleep(1);
-                        break;
-                    
-                    default:
-                        break;
+                        // stop X
+                        case 81: // Q
+                        case 113: // q
+                            sleep(1);
+                            break;
+                        
+                        default:
+                            break;
+                    }
                 }
                 break;
 

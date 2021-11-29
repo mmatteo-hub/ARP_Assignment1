@@ -99,50 +99,54 @@ int main(int argc, char * argv[])
                 break;
 
             case 0: // no new value
-                switch(atoi(input_string))
+                if(sig || sig == 2) break;
+                else
                 {
-                    // down
-                    case 122: // z
-                    case 90: // Z
-                        if(z_position > 0)
-                        {
-                            z_position -= 0.25;
-                            sprintf(passVal,format_string,z_position);
-                            write(fdZ_write,passVal,strlen(passVal)+1);
-                            sleep(1);
-                        }
-                        else
-                        {
-                            printf("Z cannot be decreased any more\n");
-                            fflush(stdout);
-                        }
-                        break;
+                    switch(atoi(input_string))
+                    {
+                        // down
+                        case 122: // z
+                        case 90: // Z
+                            if(z_position > 0)
+                            {
+                                z_position -= 0.25;
+                                sprintf(passVal,format_string,z_position);
+                                write(fdZ_write,passVal,strlen(passVal)+1);
+                                sleep(1);
+                            }
+                            else
+                            {
+                                printf("Z cannot be decreased any more\n");
+                                fflush(stdout);
+                            }
+                            break;
 
-                    // up
-                    case 119: // w
-                    case 87: // W
-                        if(z_position < 20)
-                        {
-                            z_position += 0.25;
-                            sprintf(passVal,format_string,z_position);
-                            write(fdZ_write,passVal,strlen(passVal)+1);
-                            sleep(1);
-                        }
-                        else
-                        {
-                            printf("Z cannot be increased any more\n");
-                            fflush(stdout);
-                        }
-                        break;
+                        // up
+                        case 119: // w
+                        case 87: // W
+                            if(z_position < 20)
+                            {
+                                z_position += 0.25;
+                                sprintf(passVal,format_string,z_position);
+                                write(fdZ_write,passVal,strlen(passVal)+1);
+                                sleep(1);
+                            }
+                            else
+                            {
+                                printf("Z cannot be increased any more\n");
+                                fflush(stdout);
+                            }
+                            break;
 
-                    // stop Z
-                    case 101: // e
-                    case 69: // E
-                        sleep(1);
-                        break;
-                    
-                    default:
-                        break;
+                        // stop Z
+                        case 101: // e
+                        case 69: // E
+                            sleep(1);
+                            break;
+                        
+                        default:
+                            break;
+                    }
                 }
                 break;
 
