@@ -119,10 +119,13 @@ int main()
   fflush(stdout);
 
   char inputStr[80];
+
+  sleep(2);
   
   do
   {
-    printf ("\n%sPress T to TERMINATE the program\n",KYEL);
+    system("clear");
+    printf ("%sPress T to TERMINATE the program\n",KYEL);
     scanf("%s",inputStr);
   }
   while(strcmp(inputStr, "T") != 0);
