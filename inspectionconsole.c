@@ -7,6 +7,10 @@
 #include <stdlib.h>
 #include <signal.h>
 
+#define KNRM  "\x1B[0m"
+#define KRED  "\x1B[31m"
+#define KGRN  "\x1B[32m"
+
 int fd_x_write, fd_z_write;
 int fd_x_read, fd_z_read;
 
@@ -84,10 +88,10 @@ int main(int argc, char * argv[])
 
         system("clear");
 
-        printf("X = %s |  Z = %s\n", input_string_x, input_string_z);
+        printf("%sX = %s |  Z = %s\n", KNRM, input_string_x, input_string_z);
         fflush(stdout);
 
-        printf("PRESS: \n s to STOP both motors for an emergency\n r to RESET both motors\n");
+        printf("%sPRESS: \n %sS to STOP both motors for an emergency\n %sR to RESET both motors\n%s", KNRM, KRED, KGRN, KNRM);
         fflush(stdout);
 
         sleep(1);
@@ -112,7 +116,7 @@ int main(int argc, char * argv[])
                 fflush(stdin);
                 if(strlen(out_str) > 1)
                 {
-                    printf("Wrong input. Input has to be 1 character only!\n");
+                    printf("%sWrong input. Input has to be 1 character only!\n", KRED);
                     fflush(stdout);
                 }
                 else
@@ -122,7 +126,7 @@ int main(int argc, char * argv[])
                         // reset
                         case 114: // case r
                         case 82: // case R
-                            printf("RESET WAS PRESSED\n");
+                            printf("%sRESET WAS PRESSED\n",KNRM);
                             fflush(stdout);
                             kill(pidX_got,SIGUSR1);
                             kill(pidZ_got,SIGUSR1);
@@ -131,7 +135,7 @@ int main(int argc, char * argv[])
                         // emergency stop
                         case 115: // case s
                         case 83: // case S
-                            printf("EMERGENCY STOP WAS PRESSED\n");
+                            printf("%sEMERGENCY STOP WAS PRESSED\n",KRED);
                             fflush(stdout);
                             kill(pidX_got,SIGUSR2);
                             kill(pidZ_got,SIGUSR2);
