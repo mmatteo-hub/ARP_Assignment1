@@ -7,6 +7,8 @@
 #include <stdlib.h>
 #include <signal.h>
 #include <sys/select.h>
+#include <time.h>
+
 
 float x_position = 0; // motorX positiion
 

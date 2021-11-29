@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <signal.h>
 #include <sys/select.h>
+#include <time.h>
 
 float z_position = 0; // motorZ positiion
 
