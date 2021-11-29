@@ -11,6 +11,8 @@
 
 #define increment 0.25
 #define max_err 0.01
+#define max_pos 25
+#define min_pos 0
 
 
 float x_position = 0; // motorX positiion
@@ -113,7 +115,7 @@ int main(int argc, char * argv[])
                         // left
                         case 65: // A
                         case 97: // a
-                            if(x_position - (increment + err) > min_pose)
+                            if(x_position - (increment + err) > min_pos)
                             {
                                 if(s)
                                 {
