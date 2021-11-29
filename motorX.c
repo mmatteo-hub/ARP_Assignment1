@@ -15,10 +15,10 @@
 float x_position = 0; // motorX positiion
 
 // error on position
-float randomErr()
+double randomErr()
 {
     srand(time(NULL));
-    return (((double)rand()) / ((double)RAND_MAX)) * (double)0.10;
+    return (((double)rand()) / ((double)RAND_MAX)) * (double)0.01;
 }
 
 // sign
@@ -83,7 +83,7 @@ int main(int argc, char * argv[])
 
     while(1)
     {   int s = sign();
-        int err = randomErr();
+        double err = randomErr();
         // open pipe
         fd_valX = open(fifo_valX,O_RDONLY | O_NONBLOCK);
         fdX_write = open(fifo_motXinsp, O_WRONLY | O_NONBLOCK);
