@@ -1,3 +1,5 @@
+unzip src.zip
+
 rm -r exe
 rm -r log
 mkdir exe
@@ -8,4 +10,3 @@ gcc src/inspectionconsole.c -o exe/inspectionconsole
 gcc src/motorX.c -o exe/motorX
 gcc src/motorZ.c -o exe/motorZ
 gcc src/watchdog.c -o exe/watchdog
-./exe/executor
