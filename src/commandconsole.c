@@ -6,6 +6,7 @@
 #include <unistd.h> 
 #include <stdlib.h>
 #include <signal.h>
+#include <time.h>
 
 #define KNRM  "\x1B[0m"
 #define KRED  "\x1B[31m"
@@ -21,8 +22,12 @@ char pid_WD[80];
 char pid[80];
 int pidX_got, pidZ_got, pid_wd;
 
+FILE *f;
+time_t clk;
+
 int main(int argc, char * argv[])
 {
+    f = fopen("./log/logfile.txt","a");
     char outup_string[80];
     // pipe from command console to motors
     char * fifo_valX = "/tmp/fifo_valX";
@@ -52,8 +57,10 @@ int main(int argc, char * argv[])
 
         if(strlen(ch1) != 1)
         {
-            printf("%sWrong input. Input has to be 1 character only!\n",KRED);
-            fflush(stdout);
+            fseek(f,0,SEEK_END);
+            clk = time(NULL);
+            fprintf(f,"Command Console, too many inputs inserited at : %s",ctime(&clk));
+            fflush(f);
         }
 
         else
@@ -65,49 +72,63 @@ int main(int argc, char * argv[])
             {
                 case 119: // case w
                 case 87: // case W
-                    printf("%sUP WAS PRESSED\n",KBLU);
-                    fflush(stdout);
+                    fseek(f,0,SEEK_END);
+                    clk = time(NULL);
+                    fprintf(f,"Command Console, UP command inserted at : %s",ctime(&clk));
+                    fflush(f);
                     write(fdZ_write, out_str, strlen(out_str)+1);
                     break;
 
                 case 122 :// case z
                 case 90: // case Z
-                    printf("%sDOWN WAS PRESSED\n",KBLU);
-                    fflush(stdout);
+                    fseek(f,0,SEEK_END);
+                    clk = time(NULL);
+                    fprintf(f,"Command Console, DOWN command inserted at : %s",ctime(&clk));
+                    fflush(f);
                     write(fdZ_write, out_str, strlen(out_str)+1);
                     break;
                     
                 case 97: // case a
                 case 65: // case A
-                    printf("%sLEFT WAS PRESSED\n",KBLU);
-                    fflush(stdout);
+                    fseek(f,0,SEEK_END);
+                    clk = time(NULL);
+                    fprintf(f,"Command Console, LEFT command inserted at : %s",ctime(&clk));
+                    fflush(f);
                     write(fdX_write, out_str, strlen(out_str)+1);
                     break;
 
                 case 100: // case d
                 case 68: // case D
-                    printf("%sRIGHT WAS PRESSED\n",KBLU);
-                    fflush(stdout);
+                    fseek(f,0,SEEK_END);
+                    clk = time(NULL);
+                    fprintf(f,"Command Console, RIGHT command inserted at : %s",ctime(&clk));
+                    fflush(f);
                     write(fdX_write, out_str, strlen(out_str)+1);
                     break;
 
                 case 113: // case q
                 case 81: // case Q
-                    printf("%sSTOP X WAS PRESSED\n",KBLU);
-                    fflush(stdout);
+                    fseek(f,0,SEEK_END);
+                    clk = time(NULL);
+                    fprintf(f,"Command Console, STOP X command inserted at : %s",ctime(&clk));
+                    fflush(f);
                     write(fdX_write, out_str, strlen(out_str)+1);
                     break;
 
                 case 101: // case e
                 case 69: // case E
-                    printf("%sSTOP Z WAS PRESSED\n",KBLU);
-                    fflush(stdout);
+                    fseek(f,0,SEEK_END);
+                    clk = time(NULL);
+                    fprintf(f,"Command Console, STOP Z command inserted at : %s",ctime(&clk));
+                    fflush(f);
                     write(fdZ_write, out_str, strlen(out_str)+1);
                     break;
 
                 default:
-                    printf("%sWrong input, key pressed: %c\n",KYEL, var);
-                    fflush(stdout);
+                    fseek(f,0,SEEK_END);
+                    clk = time(NULL);
+                    fprintf(f,"Command Console, invalid command inserted at : %s",ctime(&clk));
+                    fflush(f);
                     break;
             }
             // send a signal to the watchdog to restart the counter

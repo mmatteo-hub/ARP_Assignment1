@@ -1,0 +1,20 @@
+1st konsole (PID = 56683) created at : Tue Nov 30 14:22:27 2021
+2nd konsole (PID = 56684) created at : Tue Nov 30 14:22:27 2021
+3rd konsole (PID = 56685) created at : Tue Nov 30 14:22:27 2021
+4th konsole (PID = 56686) created at : Tue Nov 30 14:22:27 2021
+5th konsole (PID = 56687) created at : Tue Nov 30 14:22:27 2021
+Inspection Console, RESET command inserited at : Tue Nov 30 14:22:31 2021
+Inspection Console, signal (SIGUSR1) sent to motorX at : Tue Nov 30 14:22:31 2021
+Inspection Console, signal (SIGUSR1) sent to motorZ at : Tue Nov 30 14:22:31 2021
+Motor Z, RESET signal (SIGUSR1) received at : Tue Nov 30 14:22:31 2021
+Motor X, RESET signal (SIGUSR1) received at : Tue Nov 30 14:22:31 2021
+Motor X, RESET signal (SIGUSR1) received at : Tue Nov 30 14:23:28 2021
+Watchdog, signal SIGUSR1 sent to motor X at : Tue Nov 30 14:23:28 2021
+Watchdog, signal SIGUSR1 sent to motor Z at : Tue Nov 30 14:23:28 2021
+Motor Z, RESET signal (SIGUSR1) received at : Tue Nov 30 14:23:28 2021
+Process (PID = 56683) killed at : Tue Nov 30 14:23:52 2021
+Process (PID = 56684) killed at : Tue Nov 30 14:23:52 2021
+Process (PID = 56685) killed at : Tue Nov 30 14:23:52 2021
+Process (PID = 56686) killed at : Tue Nov 30 14:23:52 2021
+Process (PID = 56687) killed at : Tue Nov 30 14:23:52 2021
+Master process (PID = 56682) finished at : Tue Nov 30 14:23:52 2021

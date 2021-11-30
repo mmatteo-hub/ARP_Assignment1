@@ -11,6 +11,9 @@
 #define secs 60
 time_t t;
 
+FILE *f;
+time_t clk;
+
 int pidX_got, pidZ_got;
 int fdX, fdZ;
 char pid[80];
@@ -21,11 +24,20 @@ float x_position, z_position;
 
 void sig_handler(int signo)
 {
-    if (signo == SIGALRM) t = time(NULL);
+    f = fopen("./log/logfile.txt","a");
+    if (signo == SIGALRM)
+    {
+        clk = time(NULL);
+        fprintf(f,"Motor Z, ACTION signal (SIGALRM) received at : %s",ctime(&clk));
+        fflush(f);
+        t = time(NULL);
+    }
 }
 
 int main(int argc, char * argv[])
 {
+    f = fopen("./log/logfile.txt","a");
+
     t = time(NULL);
     signal(SIGALRM,sig_handler);
     
@@ -72,8 +84,20 @@ int main(int argc, char * argv[])
         {
             printf("No signals received: reset incoming!\n"); fflush(stdout);
 
+            sleep(0.1);
+
             kill(pidX_got,SIGUSR1);
+            fseek(f,0,SEEK_END);
+            clk = time(NULL);
+            fprintf(f,"Watchdog, signal SIGUSR1 sent to motor X at : %s",ctime(&clk));
+            fflush(f);
+
             kill(pidZ_got,SIGUSR1);
+            fseek(f,0,SEEK_END);
+            clk = time(NULL);
+            fprintf(f,"Watchdog, signal SIGUSR1 sent to motor Z at : %s",ctime(&clk));
+            fflush(f);
+
             t = time(NULL);
         }
     }

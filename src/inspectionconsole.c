@@ -6,6 +6,7 @@
 #include <unistd.h> 
 #include <stdlib.h>
 #include <signal.h>
+#include <time.h>
 
 #define KNRM  "\x1B[0m"
 #define KRED  "\x1B[31m"
@@ -23,9 +24,12 @@ int fdX, fdZ;
 char pid[80];
 char format_string_pid[80] = "%d,%d";
 
+FILE *f;
+time_t clk;
+
 int main(int argc, char * argv[])
 {
-    //char * myfifo_inspection = "/tmp/fifo_inspection";
+    f = fopen("./log/logfile.txt","a");
 
     // the following pipes are used to read values of x and z from the motors
     char * fifo_motXinsp = "/tmp/motX_insp";
@@ -103,6 +107,10 @@ int main(int argc, char * argv[])
         switch(ret1)
         {
             case -1: // select error
+                fseek(f,0,SEEK_END);
+                clk = time(NULL);
+                fprintf(f,"Inspection Console, error during program at : %s",ctime(&clk));
+                fflush(f);
                 perror("Error during the program");
                 fflush(stdout);
                 break;
@@ -116,8 +124,10 @@ int main(int argc, char * argv[])
                 fflush(stdin);
                 if(strlen(out_str) > 1)
                 {
-                    printf("%sWrong input. Input has to be 1 character only!\n", KRED);
-                    fflush(stdout);
+                    fseek(f,0,SEEK_END);
+                    clk = time(NULL);
+                    fprintf(f,"Inspection Console, too many inputs inserited at : %s",ctime(&clk));
+                    fflush(f);
                 }
                 else
                 {
@@ -126,30 +136,44 @@ int main(int argc, char * argv[])
                         // reset
                         case 114: // case r
                         case 82: // case R
-                            printf("%sRESET WAS PRESSED\n",KNRM);
-                            fflush(stdout);
+                            fseek(f,0,SEEK_END);
+                            clk = time(NULL);
+                            fprintf(f,"Inspection Console, RESET command inserited at : %s",ctime(&clk));
+                            fflush(f);
+
                             kill(pidX_got,SIGUSR1);
+                            fseek(f,0,SEEK_END);
+                            clk = time(NULL);
+                            fprintf(f,"Inspection Console, signal (SIGUSR1) sent to motorX at : %s",ctime(&clk));
+                            fflush(f);
+
                             kill(pidZ_got,SIGUSR1);
+                            fseek(f,0,SEEK_END);
+                            clk = time(NULL);
+                            fprintf(f,"Inspection Console, signal (SIGUSR1) sent to motorZ at : %s",ctime(&clk));
+                            fflush(f);
                             break;
 
                         // emergency stop
                         case 115: // case s
                         case 83: // case S
-                            printf("%sEMERGENCY STOP WAS PRESSED\n",KRED);
-                            fflush(stdout);
-                            kill(pidX_got,SIGUSR2);
-                            kill(pidZ_got,SIGUSR2);
-                            break;
+                            fseek(f,0,SEEK_END);
+                            clk = time(NULL);
+                            fprintf(f,"Inspection Console, EMERGENCY STOP command inserited at : %s",ctime(&clk));
+                            fflush(f);
 
-                        // terminate process
-                        /*case 116: // case t
-                        case 84: // case T
-                            kill(pidX_got,SIGKILL);
-                            kill(pidZ_got,SIGKILL);
-                            kill(pidWD_got,SIGKILL);
-                            kill(pid_comm,SIGKILL);
-                            exit(0);
-                            break;*/
+                            kill(pidX_got,SIGUSR2);
+                            fseek(f,0,SEEK_END);
+                            clk = time(NULL);
+                            fprintf(f,"Inspection Console, signal (SIGUSR2) sent to motorX at : %s",ctime(&clk));
+                            fflush(f);
+
+                            kill(pidZ_got,SIGUSR2);
+                            fseek(f,0,SEEK_END);
+                            clk = time(NULL);
+                            fprintf(f,"Inspection Console, signal (SIGUSR2) sent to motorZ at : %s",ctime(&clk));
+                            fflush(f);
+                            break;
 
                         default:
                             break;
@@ -160,6 +184,10 @@ int main(int argc, char * argv[])
             switch(ret2)
             {
                 case -1:
+                    fseek(f,0,SEEK_END);
+                    clk = time(NULL);
+                    fprintf(f,"Inspection Console, error during prigram at : %s",ctime(&clk));
+                    fflush(f);
                     perror("Error during the program");
                     fflush(stdout);
                     break;

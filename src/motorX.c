@@ -14,6 +14,9 @@
 #define max_pos 25
 #define min_pos 0
 
+FILE *f;
+time_t clk;
+
 
 float x_position = 0; // motorX positiion
 
@@ -45,12 +48,29 @@ int sig = 0;
 // signals from inspection
 void sig_handler(int signo)
 {
-    if (signo == SIGUSR1) sig = 1; // reset
-    else if(signo == SIGUSR2) sig = 2; // stop
+    f = fopen("./log/logfile.txt","a");
+    if (signo == SIGUSR1)
+    {
+        fseek(f,0,SEEK_END);
+        clk = time(NULL);
+        fprintf(f,"Motor X, RESET signal (SIGUSR1) received at : %s",ctime(&clk));
+        fflush(f);
+        sig = 1; // reset
+    }
+    else if(signo == SIGUSR2)
+    {
+        fseek(f,0,SEEK_END);
+        clk = time(NULL);
+        fprintf(f,"Motor X, STOP signal (SIGUSR2) received at : %s",ctime(&clk));
+        fflush(f);
+        sig = 2; // stop
+    }
 }
 
 int main(int argc, char * argv[])
 {
+    f = fopen("./log/logfile.txt","a");
+
     // signals from inspection
     signal(SIGUSR1,sig_handler);
     signal(SIGUSR2,sig_handler);
@@ -102,6 +122,10 @@ int main(int argc, char * argv[])
         switch(retval)
         {
             case -1: // select error
+                fseek(f,0,SEEK_END);
+                clk = time(NULL);
+                fprintf(f,"Motor X, error during program at : %s",ctime(&clk));
+                fflush(f);
                 perror("select()");
                 fflush(stdout);
                 break;
@@ -131,12 +155,17 @@ int main(int argc, char * argv[])
                                     write(fdX_write,passVal,strlen(passVal)+1);
                                     sleep(1);
                                 }
+                                fseek(f,0,SEEK_END);
+                                clk = time(NULL);
+                                fprintf(f,"Motor X, decreasing position, X = %f at : %s",x_position,ctime(&clk));
+                                fflush(f);
                             }
                             else
                             {
-                                system("clear");
-                                printf("X cannot be decreased any more\n");
-                                fflush(stdout);
+                                fseek(f,0,SEEK_END);
+                                clk = time(NULL);
+                                fprintf(f,"Motor X, lower limit reached at : %s",ctime(&clk));
+                                fflush(f);
                             }
                             break;
 
@@ -159,18 +188,27 @@ int main(int argc, char * argv[])
                                     write(fdX_write,passVal,strlen(passVal)+1);
                                     sleep(1);
                                 }
+                                fseek(f,0,SEEK_END);
+                                clk = time(NULL);
+                                fprintf(f,"Motor X, increasing position, X = %f at : %s",x_position,ctime(&clk));
+                                fflush(f);
                             }
                             else
                             {
-                                system("clear");
-                                printf("X cannot be increased any more\n");
-                                fflush(stdout);
+                                fseek(f,0,SEEK_END);
+                                clk = time(NULL);
+                                fprintf(f,"Motor X, upper limit reached at : %s",ctime(&clk));
+                                fflush(f);
                             }
                             break;
 
                         // stop X
                         case 81: // Q
                         case 113: // q
+                            fseek(f,0,SEEK_END);
+                            clk = time(NULL);
+                            fprintf(f,"Motor X, stopping position, X = %f at : %s",x_position,ctime(&clk));
+                            fflush(f);
                             sleep(1);
                             break;
                         
