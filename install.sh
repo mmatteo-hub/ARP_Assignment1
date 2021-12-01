@@ -1,4 +1,4 @@
-unzip -d $1/ src.zip
+unzip -q -d $1/ src.zip
 
 mkdir $1/exc
 mkdir $1/log
