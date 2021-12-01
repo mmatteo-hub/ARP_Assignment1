@@ -1,3 +1,5 @@
+more README.txt
+
 cd -- "$(find . -iname src -type d)"
 
 more src/commandconsole/commandconsole.txt
