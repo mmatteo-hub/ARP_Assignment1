@@ -1,4 +1,3 @@
-more README.txt
 more src/commandconsole/commandconsole.txt
 more src/inspectionconsole/inspectionconsole.txt
 more src/executor/executor.txt
