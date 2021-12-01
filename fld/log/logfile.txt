@@ -1,0 +1,32 @@
+konsole (PID = 7357) created at : Wed Dec  1 13:51:21 2021
+konsole (PID = 7358) created at : Wed Dec  1 13:51:21 2021
+konsole (PID = 7359) created at : Wed Dec  1 13:51:21 2021
+konsole (PID = 7360) created at : Wed Dec  1 13:51:21 2021
+konsole (PID = 7361) created at : Wed Dec  1 13:51:21 2021
+Command Console, RIGHT command inserted at : Wed Dec  1 13:51:30 2021
+Motor Z, ACTION signal (SIGALRM) received at : Wed Dec  1 13:51:30 2021
+Motor X, increasing position, X = 0.256115 at : Wed Dec  1 13:51:31 2021
+Motor X, increasing position, X = 0.515775 at : Wed Dec  1 13:51:32 2021
+Command Console, UP command inserted at : Wed Dec  1 13:51:32 2021
+Motor Z, ACTION signal (SIGALRM) received at : Wed Dec  1 13:51:32 2021
+Motor X, increasing position, X = 0.774032 at : Wed Dec  1 13:51:33 2021
+Motor X, increasing position, X = 1.022257 at : Wed Dec  1 13:51:34 2021
+Motor X, increasing position, X = 1.277632 at : Wed Dec  1 13:51:35 2021
+Motor X, increasing position, X = 1.536649 at : Wed Dec  1 13:51:36 2021
+Motor X, increasing position, X = 1.794264 at : Wed Dec  1 13:51:37 2021
+Motor X, increasing position, X = 2.043112 at : Wed Dec  1 13:51:38 2021
+Motor X, increasing position, X = 2.288355 at : Wed Dec  1 13:51:39 2021
+Motor X, increasing position, X = 2.546738 at : Wed Dec  1 13:51:40 2021
+Motor X, increasing position, X = 2.794782 at : Wed Dec  1 13:51:41 2021
+Motor X, increasing position, X = 3.044277 at : Wed Dec  1 13:51:42 2021
+Motor X, increasing position, X = 3.290210 at : Wed Dec  1 13:51:43 2021
+Motor X, increasing position, X = 3.547910 at : Wed Dec  1 13:51:44 2021
+Motor X, increasing position, X = 3.804161 at : Wed Dec  1 13:51:45 2021
+Motor X, increasing position, X = 4.049296 at : Wed Dec  1 13:51:46 2021
+Motor X, increasing position, X = 4.307726 at : Wed Dec  1 13:51:47 2021
+Process (PID = 7357) killed at : Wed Dec  1 13:51:47 2021
+Process (PID = 7358) killed at : Wed Dec  1 13:51:47 2021
+Process (PID = 7359) killed at : Wed Dec  1 13:51:47 2021
+Process (PID = 7360) killed at : Wed Dec  1 13:51:47 2021
+Process (PID = 7361) killed at : Wed Dec  1 13:51:47 2021
+Master process (PID = 7356) finished at : Wed Dec  1 13:51:47 2021

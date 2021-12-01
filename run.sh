@@ -1,1 +1,3 @@
-./fld/exc/executor
+cd -- "$(find . -iname exc -type d)"
+
+./executor
