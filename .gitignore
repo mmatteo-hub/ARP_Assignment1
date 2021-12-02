@@ -1,10 +1,6 @@
 # Ignore file
-commandconsole
-executor
-motorX
-motorZ
-inspectionconsole
-watchdog
+log
+exc
 
 # Compiled source #
 ###################
