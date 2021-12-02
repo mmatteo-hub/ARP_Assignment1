@@ -19,7 +19,7 @@
 FILE *f;
 time_t clk;
 
-float x_position = 0; // motorX positiion
+float z_position = 0; // motorX positiion
 
 // error on position
 double randomErr()
@@ -37,7 +37,7 @@ int sign()
     else return 0;
 }
 
-int fd_valX, fdX_write;
+int fd_valZ, fdZ_write;
 char pid_string[80];
 char format_pid_string[80] = "%d";
 
@@ -54,7 +54,7 @@ void sig_handler(int signo)
     {
         fseek(f,0,SEEK_END);
         clk = time(NULL);
-        fprintf(f,"Motor X, RESET signal (SIGUSR1) received at : %s",ctime(&clk));
+        fprintf(f,"Motor Z, RESET signal (SIGUSR1) received at : %s",ctime(&clk));
         fflush(f);
         sig = 1; // reset
     }
@@ -62,7 +62,7 @@ void sig_handler(int signo)
     {
         fseek(f,0,SEEK_END);
         clk = time(NULL);
-        fprintf(f,"Motor X, STOP signal (SIGUSR2) received at : %s",ctime(&clk));
+        fprintf(f,"Motor Z, STOP signal (SIGUSR2) received at : %s",ctime(&clk));
         fflush(f);
         sig = 2; // stop
     }
@@ -76,26 +76,26 @@ int main(int argc, char * argv[])
     signal(SIGUSR1,sig_handler);
     signal(SIGUSR2,sig_handler);
 
-    char * fifo_valX = "/tmp/fifo_valX";
-    char * fifo_motXinsp = "/tmp/motX_insp";
-    char * pid_motX = "/tmp/pid_motX";
-    char * pid_motX_watchdog = "/tmp/pid_motX_watch";
-    mkfifo(fifo_valX,0666);
-    mkfifo(fifo_motXinsp,0666);
-    mkfifo(pid_motX,0666);
-    mkfifo(pid_motX_watchdog,0666);
+    char * fifo_valZ = "/tmp/fifo_valZ";
+    char * fifo_motZinsp = "/tmp/motZ_insp";
+    char * pid_motZ = "/tmp/pid_motZ";
+    char * pid_motZ_watchdog = "/tmp/pid_motZ_watch";
+    mkfifo(fifo_valZ,0666);
+    mkfifo(fifo_motZinsp,0666);
+    mkfifo(pid_motZ,0666);
+    mkfifo(pid_motZ_watchdog,0666);
 
     char pid[80];
 
     // writing pid
-    int x_pid = open(pid_motX, O_WRONLY);
+    int z_pid = open(pid_motZ, O_WRONLY);
     sprintf(pid, format_pid_string, (int)getpid());
-    write(x_pid, pid, strlen(pid)+1);
-    close(x_pid);
-    int x_pid_w = open(pid_motX_watchdog, O_WRONLY);
+    write(z_pid, pid, strlen(pid)+1);
+    close(z_pid);
+    int z_pid_w = open(pid_motZ_watchdog, O_WRONLY);
     sprintf(pid, format_pid_string, (int)getpid());
-    write(x_pid_w, pid, strlen(pid)+1);
-    close(x_pid_w);
+    write(z_pid_w, pid, strlen(pid)+1);
+    close(z_pid_w);
 
     // initialise struct for the select
     fd_set rfds;
@@ -106,8 +106,8 @@ int main(int argc, char * argv[])
     char input_str;
 
     // open pipe
-    fd_valX = open(fifo_valX,O_RDONLY);
-    fdX_write = open(fifo_motXinsp, O_WRONLY);
+    fd_valZ = open(fifo_valZ,O_RDONLY);
+    fdZ_write = open(fifo_motZinsp, O_WRONLY);
 
     while(1)
     {   
@@ -115,7 +115,7 @@ int main(int argc, char * argv[])
         double err = randomErr();
 
         FD_ZERO(&rfds);
-        FD_SET(fd_valX,&rfds);
+        FD_SET(fd_valZ,&rfds);
 
         tv.tv_sec = 0;
         tv.tv_usec = 0;
@@ -127,7 +127,7 @@ int main(int argc, char * argv[])
             case -1: // select error
                 fseek(f,0,SEEK_END);
                 clk = time(NULL);
-                fprintf(f,"Motor X, error during program at : %s",ctime(&clk));
+                fprintf(f,"Motor Z, error during program at : %s",ctime(&clk));
                 fflush(f);
                 perror("select()");
                 fflush(stdout);
@@ -139,86 +139,86 @@ int main(int argc, char * argv[])
                 {
                     switch(atoi(input_string))
                     {
-                        // left
-                        case 65: // A
-                        case 97: // a
-                            if(x_position - (increment + err) > min_pos)
+                        // down
+                        case 90: // Z
+                        case 122: // z
+                            if(z_position - (increment + err) > min_pos)
                             {
                                 if(s)
                                 {
-                                    x_position -= (increment+err);
-                                    sprintf(passVal,format_string,x_position);
-                                    write(fdX_write,passVal,strlen(passVal)+1);
+                                    z_position -= (increment+err);
+                                    sprintf(passVal,format_string,z_position);
+                                    write(fdZ_write,passVal,strlen(passVal)+1);
                                     usleep(USEC);
                                 }
                                 else if(!s)
                                 {
-                                    x_position -= (increment-err);
-                                    sprintf(passVal,format_string,x_position);
-                                    write(fdX_write,passVal,strlen(passVal)+1);
+                                    z_position -= (increment-err);
+                                    sprintf(passVal,format_string,z_position);
+                                    write(fdZ_write,passVal,strlen(passVal)+1);
                                     usleep(USEC);
                                 }
                                 fseek(f,0,SEEK_END);
                                 clk = time(NULL);
-                                fprintf(f,"Motor X, decreasing position, X = %f m at : %s",x_position,ctime(&clk));
+                                fprintf(f,"Motor Z, decreasing position, Z = %f m at : %s",z_position,ctime(&clk));
                                 fflush(f);
                             }
                             else
                             {
-                                x_position = min_pos;
-                                sprintf(passVal,format_string,x_position);
-                                write(fdX_write,passVal,strlen(passVal)+1);
+                                z_position = min_pos;
+                                sprintf(passVal,format_string,z_position);
+                                write(fdZ_write,passVal,strlen(passVal)+1);
                                 fseek(f,0,SEEK_END);
                                 clk = time(NULL);
-                                fprintf(f,"Motor X, lower limit reached, X = %f m at : %s",x_position,ctime(&clk));
+                                fprintf(f,"Motor Z, lower limit reached, Z = %f m at : %s",z_position,ctime(&clk));
                                 fflush(f);
                                 strcpy(input_string,"");
                             }
                             break;
 
-                        // right
-                        case 68: // D
-                        case 100: // d
-                            if(x_position + (increment + err) < max_pos)
+                        // up
+                        case 87: // W
+                        case 119: // w
+                            if(z_position + (increment + err) < max_pos)
                             {
                                 if(s)
                                 {
-                                    x_position += (increment + err);
-                                    sprintf(passVal,format_string,x_position);
-                                    write(fdX_write,passVal,strlen(passVal)+1);
+                                    z_position += (increment + err);
+                                    sprintf(passVal,format_string,z_position);
+                                    write(fdZ_write,passVal,strlen(passVal)+1);
                                     usleep(USEC);
                                 }
                                 else if(!s)
                                 {
-                                    x_position += (increment - err);
-                                    sprintf(passVal,format_string,x_position);
-                                    write(fdX_write,passVal,strlen(passVal)+1);
+                                    z_position += (increment - err);
+                                    sprintf(passVal,format_string,z_position);
+                                    write(fdZ_write,passVal,strlen(passVal)+1);
                                     usleep(USEC);
                                 }
                                 fseek(f,0,SEEK_END);
                                 clk = time(NULL);
-                                fprintf(f,"Motor X, increasing position, X = %f m at : %s",x_position,ctime(&clk));
+                                fprintf(f,"Motor Z, increasing position, Z = %f m at : %s",z_position,ctime(&clk));
                                 fflush(f);
                             }
                             else
                             {
-                                x_position = max_pos;
-                                sprintf(passVal,format_string,x_position);
-                                write(fdX_write,passVal,strlen(passVal)+1);
+                                z_position = max_pos;
+                                sprintf(passVal,format_string,z_position);
+                                write(fdZ_write,passVal,strlen(passVal)+1);
                                 fseek(f,0,SEEK_END);
                                 clk = time(NULL);
-                                fprintf(f,"Motor X, upper limit reached, X = %f m at : %s",x_position,ctime(&clk));
+                                fprintf(f,"Motor Z, upper limit reached, Z = %f m  at : %s",z_position,ctime(&clk));
                                 fflush(f);
                                 strcpy(input_string,"");
                             }
                             break;
 
-                        // stop X
-                        case 81: // Q
-                        case 113: // q
+                        // stop Z
+                        case 69: // E
+                        case 101: // e
                             fseek(f,0,SEEK_END);
                             clk = time(NULL);
-                            fprintf(f,"Motor X, stopping position, X = %f m at : %s",x_position,ctime(&clk));
+                            fprintf(f,"Motor Z, stopping position, Z = %f m at : %s",z_position,ctime(&clk));
                             fflush(f);
                             usleep(USEC);
                             break;
@@ -230,7 +230,7 @@ int main(int argc, char * argv[])
                 break;
 
             default: // got a new value
-                read(fd_valX, input_string, 80);
+                read(fd_valZ, input_string, 80);
                 sig = 0;
                 break;
         }
@@ -238,9 +238,9 @@ int main(int argc, char * argv[])
         switch(sig)
         {
             case 1: // reset
-                x_position = 0;
-                sprintf(passVal,format_string,x_position);
-                write(fdX_write,passVal,strlen(passVal)+1);
+                z_position = 0;
+                sprintf(passVal,format_string,z_position);
+                write(fdZ_write,passVal,strlen(passVal)+1);
                 usleep(USEC);
                 break;
             
@@ -251,8 +251,8 @@ int main(int argc, char * argv[])
                 break;
         }
     }
-    close(fdX_write);
-    close(fd_valX);
-    unlink(fifo_valX);
-    unlink(fifo_motXinsp);
+    close(fdZ_write);
+    close(fd_valZ);
+    unlink(fifo_valZ);
+    unlink(fifo_motZinsp);
 }
