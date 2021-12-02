@@ -7,7 +7,6 @@
   #include <stdlib.h>
   #include <signal.h>
   #include <time.h> 
-  #include <errno.h>
 
   #define BUFFSIZE 80
 
@@ -15,8 +14,6 @@
   #define KYEL  "\x1B[33m"
 
   #define USEC 1000
-
-  #define CHECK(X) ({int __val = (X); (__val == -1 ? ({fprintf(stderr,"ERROR (" __FILE__ ":%d) -- %s\n",__LINE__,strerror(errno)); exit(-1);-1;}) : __val); })
 
   // defining pids for 5 processes
   int pid1, pid2, pid3, pid4, pid5;
@@ -42,31 +39,31 @@
   // function to kill al processes and respective write on the log file all actions computed
   void kill_processes()
   {
-    CHECK(kill(pid1,SIGKILL));
+    kill(pid1,SIGKILL);
     fseek(f,0,SEEK_END);
     clk = time(NULL);
     fprintf(f,"Process (PID = %d) killed at : %s", pid1, ctime(&clk));
     fflush(f);
 
-    CHECK(kill(pid2,SIGKILL));
+    kill(pid2,SIGKILL);
     fseek(f,0,SEEK_END);
     clk = time(NULL);
     fprintf(f,"Process (PID = %d) killed at : %s", pid2, ctime(&clk));
     fflush(f);
 
-    CHECK(kill(pid3,SIGKILL));
+    kill(pid3,SIGKILL);
     fseek(f,0,SEEK_END);
     clk = time(NULL);
     fprintf(f,"Process (PID = %d) killed at : %s", pid3, ctime(&clk));
     fflush(f);
 
-    CHECK(kill(pid4,SIGKILL));
+    kill(pid4,SIGKILL);
     fseek(f,0,SEEK_END);
     clk = time(NULL);
     fprintf(f,"Process (PID = %d) killed at : %s", pid4, ctime(&clk));
     fflush(f);
 
-    CHECK(kill(pid5,SIGKILL));
+    kill(pid5,SIGKILL);
     fseek(f,0,SEEK_END);
     clk = time(NULL);
     fprintf(f,"Process (PID = %d) killed at : %s", pid5, ctime(&clk));
@@ -76,32 +73,31 @@
   // main
   int main(int argc, char *argv[])
   {
-
-    char * fifo_motXinsp = "/tmp/motX_insp";
-    char * fifo_motZinsp = "/tmp/motZ_insp";
-    char * pid_motX = "/tmp/pid_motX";
-    char * pid_motZ = "/tmp/pid_motZ";
-    char * watchdog_insp = "/tmp/watchdog_insp";
-    char * fifo_valX = "/tmp/fifo_valX";
-    char * fifo_valZ = "/tmp/fifo_valZ";
-    char * comm_wd = "/tmp/commd_wd";
-    char * pid_motZ_watchdog = "/tmp/pid_motZ_watch";
-    char * pid_motX_watchdog = "/tmp/pid_motX_watch";
-    char * watchdog_motZ= "/tmp/watchdog_motZ";
-
-    mkfifo(fifo_motXinsp, 0666);
-    mkfifo(fifo_motZinsp, 0666);
-    mkfifo(pid_motX,0666);
-    mkfifo(watchdog_insp,0666);
-    mkfifo(fifo_valX,0666);
-    mkfifo(fifo_valZ,0666);
-    mkfifo(comm_wd,0666);
-    mkfifo(pid_motZ_watchdog,0666);
-    mkfifo(pid_motX_watchdog,0666);
-    mkfifo(watchdog_motZ,0666);
-
     // opening the log file in writing mode to create if it does not exist
     f = fopen("./../log/logfile.txt","w");
+
+    char * fifo_valX = "/tmp/fifo_valX";
+    char * fifo_motXinsp = "/tmp/motX_insp";
+    char * pid_motX = "/tmp/pid_motX";
+    char * pid_motX_watchdog = "/tmp/pid_motX_watch";
+    char * fifo_valZ = "/tmp/fifo_valZ";
+    char * fifo_motZinsp = "/tmp/motZ_insp";
+    char * pid_motZ = "/tmp/pid_motZ";
+    char * pid_motZ_watchdog = "/tmp/pid_motZ_watch";
+    char * watchdog_insp = "/tmp/watchdog_insp";
+    char * watchdog_motZ= "/tmp/watchdog_motZ";
+    char * comm_wd = "/tmp/commd_wd";
+    mkfifo(fifo_valX,0666);
+    mkfifo(fifo_motXinsp,0666);
+    mkfifo(pid_motX,0666);
+    mkfifo(pid_motX_watchdog,0666);
+    mkfifo(fifo_valZ,0666);
+    mkfifo(fifo_motZinsp,0666);
+    mkfifo(pid_motZ,0666);
+    mkfifo(pid_motZ_watchdog,0666);
+    mkfifo(watchdog_insp,0666);
+    mkfifo(watchdog_motZ,0666);
+    mkfifo(comm_wd,0666);
 
     // defining all the paramters list for the processes
     char *arg_list_1[] = {"/usr/bin/konsole", "--hold", "-e", "./../exc/commandconsole", (char*)NULL};
@@ -170,18 +166,6 @@
     fprintf(f,"Master process (PID = %d) finished at : %s", (int)getpid(), ctime(&clk));
     fflush(f);
     fclose(f);
-
-    // unlinking all pipes
-    unlink(fifo_motXinsp);
-    unlink(fifo_motZinsp);
-    unlink(pid_motX);
-    unlink(watchdog_insp);
-    unlink(fifo_valX);
-    unlink(fifo_valZ);
-    unlink(comm_wd);
-    unlink(pid_motZ_watchdog);
-    unlink(pid_motX_watchdog);
-    unlink(watchdog_motZ);
     
     return 0;
   }
