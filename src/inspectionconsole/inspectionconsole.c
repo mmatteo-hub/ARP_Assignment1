@@ -41,11 +41,6 @@ int main(int argc, char * argv[])
     char * pid_motX = "/tmp/pid_motX";
     char * pid_motZ = "/tmp/pid_motZ";
     char * watchdog_insp = "/tmp/watchdog_insp";
-    mkfifo(fifo_motXinsp, 0666);
-    mkfifo(fifo_motZinsp, 0666);
-    mkfifo(pid_motX,0666);
-    mkfifo(pid_motX,0666);
-    mkfifo(watchdog_insp,0666);
 
     // getting  motorX pid
     int fd_pid = open(pid_motX, O_RDONLY);
@@ -230,8 +225,4 @@ int main(int argc, char * argv[])
     // closing pipes
     close(fd_z_read);
     close(fd_x_read);
-
-    // unlink pipes
-    unlink(fifo_motXinsp);
-    unlink(fifo_motZinsp);
 }

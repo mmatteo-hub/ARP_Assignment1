@@ -80,10 +80,6 @@ int main(int argc, char * argv[])
     char * fifo_motXinsp = "/tmp/motX_insp";
     char * pid_motX = "/tmp/pid_motX";
     char * pid_motX_watchdog = "/tmp/pid_motX_watch";
-    mkfifo(fifo_valX,0666);
-    mkfifo(fifo_motXinsp,0666);
-    mkfifo(pid_motX,0666);
-    mkfifo(pid_motX_watchdog,0666);
 
     char pid[80];
 
@@ -253,6 +249,4 @@ int main(int argc, char * argv[])
     }
     close(fdX_write);
     close(fd_valX);
-    unlink(fifo_valX);
-    unlink(fifo_motXinsp);
 }

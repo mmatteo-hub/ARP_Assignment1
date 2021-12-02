@@ -80,10 +80,6 @@ int main(int argc, char * argv[])
     char * fifo_motZinsp = "/tmp/motZ_insp";
     char * pid_motZ = "/tmp/pid_motZ";
     char * pid_motZ_watchdog = "/tmp/pid_motZ_watch";
-    mkfifo(fifo_valZ,0666);
-    mkfifo(fifo_motZinsp,0666);
-    mkfifo(pid_motZ,0666);
-    mkfifo(pid_motZ_watchdog,0666);
 
     char pid[80];
 
@@ -253,6 +249,4 @@ int main(int argc, char * argv[])
     }
     close(fdZ_write);
     close(fd_valZ);
-    unlink(fifo_valZ);
-    unlink(fifo_motZinsp);
 }

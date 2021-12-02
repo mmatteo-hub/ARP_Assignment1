@@ -39,9 +39,6 @@ int main(int argc, char * argv[])
     char * fifo_valX = "/tmp/fifo_valX";
     char * fifo_valZ = "/tmp/fifo_valZ";
     char * comm_wd = "/tmp/commd_wd";
-    mkfifo(fifo_valX,0666);
-    mkfifo(fifo_valZ,0666);
-    mkfifo(comm_wd,0666);
 
     // get watchdog pid
     int fd_wdComm = open(comm_wd,O_RDONLY);
@@ -153,8 +150,4 @@ int main(int argc, char * argv[])
     // close pipes
     close(fdZ_write);
     close(fdX_write);
-
-    // unlink pipes
-    unlink(fifo_valZ);
-    unlink(fifo_valX);
 }

@@ -47,12 +47,6 @@ int main(int argc, char * argv[])
     char * pid_motZ_watchdog = "/tmp/pid_motZ_watch";
     char * comm_wd = "/tmp/commd_wd";
 
-    mkfifo(watchdog_insp,0666);
-    mkfifo(watchdog_motZ,0666);
-    mkfifo(pid_motX_watchdog, 0666);
-    mkfifo(pid_motZ_watchdog, 0666);
-    mkfifo(comm_wd,0666);
-
     char pid[80];
 
     int x_pid_w = open(pid_motX_watchdog, O_RDONLY);
