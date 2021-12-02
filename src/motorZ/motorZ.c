@@ -11,7 +11,7 @@
 
 #define increment 0.0025 //mm
 #define max_err 0.0001 // mm
-#define max_pos 5 // m
+#define max_pos 10 // m
 #define min_pos 0 // m
 
 #define USEC 10000
