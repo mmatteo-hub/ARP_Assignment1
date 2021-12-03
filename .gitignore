@@ -1,7 +1,7 @@
 # Ignore file
 log
 exc
-.vscode
+
 # Compiled source #
 ###################
 *.com
