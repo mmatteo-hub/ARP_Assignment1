@@ -1,7 +1,7 @@
 # Ignore file
 log
 exc
-
+.vscode
 # Compiled source #
 ###################
 *.com
@@ -10,7 +10,7 @@ exc
 *.exe
 *.o
 *.so
-*.vscode
+
 # Packages #
 ############
 # it's better to unpack these files and commit the raw source
