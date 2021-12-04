@@ -1,5 +1,3 @@
-
-
 ################ INSPECTION CONSOLE ################
 
 The INSPECTION CONSOLE is one of the two programs, with the COMMAND CONSOLE, which take inputs from user and  can also drive the motors.
@@ -12,3 +10,5 @@ in fact it has the due to:
 - to RESET the position of both the motor and waits as before.
 
 As weel as the COMMAND CONSOLE it has the possibility of reading uppercase and lowercase.
+
+(press 'q' to pass to the next one)

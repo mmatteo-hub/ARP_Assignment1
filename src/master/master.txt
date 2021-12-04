@@ -1,5 +1,3 @@
-
-
 ################ MASTER ################
 
 The MASTER is the process responsible of starting the program.
@@ -10,3 +8,5 @@ The MASTER runs:
 - 3 processes in background (MOTOR X, MOTOR Z and WATCHDOG).
 
 It runs inside the shell and it has the possibility to take a command as input: this command makes the MASTER able to kill all the processes and terminate the execution.
+
+(press 'q' to pass to the next one)

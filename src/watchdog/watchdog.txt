@@ -1,5 +1,3 @@
-
-
 ################ WATCHDOG ################
 
 The WATCHDOG is the process responsible to detect the activity of the hoist.
@@ -9,3 +7,5 @@ The communication is set also with both motors of the hoist: it sends a signal, 
 (in the script the time is set as 1 minute).
 
 Of course, the pids od the motors are read by named pipe.
+
+(press 'q' to pass to exit)

@@ -1,5 +1,3 @@
-
-
 ################ COMMAND CONSOLE ################
 
 The COMMAND CONSOLE is one the two programs, with the INSPECTION CONSOLE, which take inputs from user and drive the motors.
@@ -12,3 +10,5 @@ It has a control to detect if the input taken is from the menù:
 - the program reads both uppercase and lowercase as well.
 
 To have a cleaner output, the prorgram clears all at avery iteration.
+
+(press 'q' to pass to the next one)
