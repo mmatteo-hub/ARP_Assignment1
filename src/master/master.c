@@ -160,7 +160,7 @@
     do
     {
       system("clear");
-      printf ("%sPress T to TERMINATE the program\n",KYEL);
+      printf ("%sPress T to TERMINATE the program%s\n",KYEL,KNRM);
       scanf("%s",inputStr);
     }
     while(strcmp(inputStr, "T") != 0);
