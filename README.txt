@@ -35,7 +35,7 @@ The master is the main process which runs all the other processes and if necessa
 
 1.1 - check that, once the install.sh has completed, a message will be shown on the shell;
 
-2 - type '$ ./help.sh' and read the brief description below for each process to understand the general purpose and strcture of the program;
+2 - type '$ ./help.sh' and read the brief description below for each process to understand the general purpose and structure of the program;
 
 Now everything is ready to start the process ..
 
