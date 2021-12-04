@@ -1,1 +1,13 @@
 ################ MOTOR Z ################
+
+The MOTOR Z process represents one of the two motor of the hoist.
+It has the possibility of going in two direction: right and left.
+It has a limitation of its path:
+- lowest position 0 m
+- highest position 5 m.
+
+It communicates with the INSPECTION CONSOLE:
+- it sends the position by named pipes
+- it received the signal of RESET or STOP.
+
+It also communicates with the watchdog from which it receives signals in case of reset, as it will be explained.

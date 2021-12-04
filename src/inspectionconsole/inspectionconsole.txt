@@ -1,1 +1,12 @@
 ################ INSPECTION CONSOLE ################
+
+The INSPECTION CONSOLE is one of the two programs, with the COMMAND CONSOLE, which take inputs from user and  can also drive the motors.
+
+The INSPECTION CONSOLE communicates with both motors: it takes the value of the position and prints it on the console.
+
+It has the possibility of taking input from the user and, according to the specification, it is mainly used for emerngency;
+in fact it has the due to:
+- STOP both motor with and emerngency stop button and waits until a new command from the motor sarrives;
+- to RESET the position of both the motor and waits as before.
+
+As weel as the COMMAND CONSOLE it has the possibility of reading uppercase and lowercase.

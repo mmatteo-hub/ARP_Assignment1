@@ -1,1 +1,12 @@
 ################ COMMAND CONSOLE ################
+
+The COMMAND CONSOLE is one the two programs, with the INSPECTION CONSOLE, which take inputs from user and drive the motors.
+It has the work to read the input from a menù, showed at the console, and senta the option to the respective motor.
+
+It communicates with MOTOR X and Z by named pipes; it has also the possibility to send message to the WATCHDOG to advertise it for the arrival of a command.
+
+It has a control to detect if the input taken is from the menù:
+- commands are composed only by 1 charcter
+- the program reads both uppercase and lowercase as well.
+
+To have a cleaner output, the prorgram clears all at avery iteration.

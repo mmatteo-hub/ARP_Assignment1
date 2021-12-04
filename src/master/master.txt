@@ -1,1 +1,10 @@
-################ EXECUTOR ################
+################ MASTER ################
+
+The MASTER is the process responsible of starting the program.
+It has the due to start each process, to make the pipes and to unlink them once the program ends.
+
+The MASTER runs:
+- 2 consoles (COMMAND and INSPECTION CONSOLE)
+- 3 processes in background (MOTOR X, MOTOR Z and WATCHDOG).
+
+It runs inside the shell and it has the possibility to take a command as input: this command makes the MASTER able to kill all the processes and terminate the execution.
