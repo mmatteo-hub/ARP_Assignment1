@@ -159,6 +159,7 @@
     // loop to wait for the input charatcter from the shell
     do
     {
+      system("clear");
       printf ("%sPress T to TERMINATE the program\n",KYEL);
       scanf("%s",inputStr);
     }
