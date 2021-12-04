@@ -6,7 +6,7 @@ mkdir $1/exc
 mkdir $1/log
 
 # compile .c files, from src folder, and put them into exc folder created
-gcc $1/src/executor/executor.c -o $1/exc/executor
+gcc $1/src/master/master.c -o $1/exc/master
 gcc $1/src/commandconsole/commandconsole.c -o $1/exc/commandconsole
 gcc $1/src/inspectionconsole/inspectionconsole.c -o $1/exc/inspectionconsole
 gcc $1/src/motorX/motorX.c -o $1/exc/motorX

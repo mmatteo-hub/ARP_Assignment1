@@ -16,6 +16,7 @@
 
   #define USEC 1000
 
+// function to print an error in case of bad execution
   #define CHECK(X) ({int __val = (X); (__val == -1 ? ({fprintf(stderr,"ERROR (" __FILE__ ":%d) -- %s\n",__LINE__,strerror(errno)); exit(-1);-1;}) : __val); })
 
   // defining pids for 5 processes
@@ -79,6 +80,7 @@
     // opening the log file in writing mode to create if it does not exist
     f = fopen("./../log/logfile.txt","w");
 
+    // defining all pipes used in the program
     char * fifo_valX = "/tmp/fifo_valX";
     char * fifo_motXinsp = "/tmp/motX_insp";
     char * pid_motX = "/tmp/pid_motX";
@@ -90,6 +92,8 @@
     char * watchdog_insp = "/tmp/watchdog_insp";
     char * watchdog_motZ= "/tmp/watchdog_motZ";
     char * comm_wd = "/tmp/commd_wd";
+
+    // opening all pipes inside the master process
     mkfifo(fifo_valX,0666);
     mkfifo(fifo_motXinsp,0666);
     mkfifo(pid_motX,0666);

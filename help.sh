@@ -2,7 +2,7 @@
 
 more src/commandconsole/commandconsole.txt
 more src/inspectionconsole/inspectionconsole.txt
-more src/executor/executor.txt
+more src/master/master.txt
 more src/motorX/motorX.txt
 more src/motorZ/motorZ.txt
 more src/watchdog/watchdog.txt

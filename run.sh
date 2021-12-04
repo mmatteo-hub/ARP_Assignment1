@@ -2,4 +2,4 @@
 cd -- "$(find . -iname exc -type d)"
 
 # run the master process
-./executor
+./master
