@@ -54,13 +54,10 @@ int sign()
     else return 0;
 }
 
-// signal handler
+// signals from inspection
 void sig_handler(int signo)
 {
-    // opening the log file in append mode to add to the existing file
     f = fopen("./../log/logfile.txt","a");
-
-    // depenfing on which signal has arrived the handler set a different value of sig to make the motor do the action choosen
     if (signo == SIGUSR1)
     {
         fseek(f,0,SEEK_END);
@@ -81,7 +78,6 @@ void sig_handler(int signo)
 
 int main(int argc, char * argv[])
 {
-    // opening the log file in append mode to add to the existing file
     f = fopen("./../log/logfile.txt","a");
 
     // signals from inspection
@@ -125,13 +121,10 @@ int main(int argc, char * argv[])
         tv.tv_sec = 0;
         tv.tv_usec = 0;
 
-         // select to detect if a new command has arrived
         retval = select(FD_SETSIZE+1,&rfds,NULL,NULL,&tv);
 
-        // switch the value for retval
         switch(retval)
         {
-             // computing the x position according to an error err and a sign s
             case -1: // select error
                 fseek(f,0,SEEK_END);
                 clk = time(NULL);
@@ -243,7 +236,6 @@ int main(int argc, char * argv[])
                 break;
         }
 
-        // switching the value of sig determined by the signal handler
         switch(sig)
         {
             case 1: // reset

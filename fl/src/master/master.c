@@ -77,7 +77,7 @@
   // main
   int main(int argc, char *argv[])
   {
-    // opening the log file in append mode to add to the existing file
+    // opening the log file in writing mode to create if it does not exist
     f = fopen("./../log/logfile.txt","w");
 
     // defining all pipes used in the program
