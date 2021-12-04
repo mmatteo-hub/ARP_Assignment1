@@ -24,9 +24,11 @@ The program contains multiple files:
 - watchdog
 - executor
 and their behaviour will be described in the sections belows.
+The program is provided of a log file, created every time the program is executed, which keeps trace of the action done during the execution of the program.
+
 
 The communication of the program is mainly based of pipes with also the presence of singnals.
 
-The executor is the master process which runs all the other processes and if necessary ends them by just shell command.
+The master is the main process which runs all the other processes and if necessary ends them by just shell command.
 
 To have infos about how to prepre and run the program type "$ ./help.sh" into to shell and follow the instructions.
