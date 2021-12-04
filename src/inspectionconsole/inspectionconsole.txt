@@ -9,6 +9,21 @@ in fact it has the due to:
 - STOP both motor with and emerngency stop button and waits until a new command from the motor sarrives;
 - to RESET the position of both the motor and waits as before.
 
+The signals are:
+>
+    >> RESET
+        SIGUSR1
+    >> STOP
+        SIGUSR2
+>
+
+The menù is composed as follows:
+>
+    >> S (o s) to STOP both motors for an emergency
+    
+    >> R (or r) to RESET both motors
+>
+
 As weel as the COMMAND CONSOLE it has the possibility of reading uppercase and lowercase.
 
 (press 'q' to pass to the next one)

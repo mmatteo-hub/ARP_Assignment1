@@ -10,6 +10,8 @@ It communicates with the INSPECTION CONSOLE:
 - it sends the position by named pipes
 - it received the signal of RESET or STOP.
 
-It also communicates with the watchdog from which it receives signals in case of reset, as it will be explained.
+The increment factor is 0.0025 m / seconds.
+
+It also communicates with the WATCHDOG from which it receives signals in case of reset, as it will be explained.
 
 (press 'q' to pass to the next one)

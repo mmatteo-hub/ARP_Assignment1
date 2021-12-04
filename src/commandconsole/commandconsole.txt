@@ -9,6 +9,24 @@ It has a control to detect if the input taken is from the menù:
 - commands are composed only by 1 charcter
 - the program reads both uppercase and lowercase as well.
 
+The menù is composed as follows:
+>
+    >> Motor Z
+        W (or w) to go UP
+        Z (or z) to go DOWN
+        E (or e) to STOP Z
+    >> Motor X
+        D (or d) to go RIGHT
+        A (or a) to go LEFT
+        Q (or q) to STOP X
+>
+
+Signal sent to the WATCHDOG
+>
+    > Command inserted
+        SIGALRM
+>
+
 To have a cleaner output, the prorgram clears all at avery iteration.
 
 (press 'q' to pass to the next one)

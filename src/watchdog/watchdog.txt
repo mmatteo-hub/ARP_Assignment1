@@ -6,6 +6,13 @@ It communicates with the COMMAND CONSOLE from which it received the signal as so
 The communication is set also with both motors of the hoist: it sends a signal, read as a RESET command by the motors, every time there is no activity for a certain time
 (in the script the time is set as 1 minute).
 
-Of course, the pids od the motors are read by named pipe.
+The signal sent to the motor is:
+
+>
+    >> RESET
+        SIGUSR1
+>
+
+Of course, the pids of the motors are read by named pipe.
 
 (press 'q' to pass to exit)
