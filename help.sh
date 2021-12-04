@@ -1,6 +1,6 @@
 # adding path and file .txt to the help.sh file to show in the shell
 
-echo " ######## PROGRAM PREPARATION ########
+echo "######## PROGRAM PREPARATION ########
 To prepare the program for the execution there are some steps to be completed:
 0 - read the brief description below for each process to understand the general purpose and strcture of the program;
 1 - type '$ ./install.sh <path name>' and press enter. The <path name> has to be the name of a folder (the folder will be created inside the actual folder, so do not give a gloabl path since the next step will not be done succesfully);

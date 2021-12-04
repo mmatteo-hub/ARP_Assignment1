@@ -1,7 +1,7 @@
 ################ ASSIGNMENT ################
 The assignment is the simulation of a hoist, realized in C language.
 The hoist has two degrees of freedom, called X axis (moving right and left) and Z axis (moving up and down).
-The origin of the hoist is the up-left point and on each degree of freedom it has a maximum space of 25.
+The origin of the hoist is the up-left point and on each degree of freedom it has a maximum space of 10 m.
 
 Graphically it can be described as follows:
 

@@ -6,7 +6,7 @@ The MOTOR X process represents one of the two motor of the hoist.
 It has the possibility of going in two direction: right and left.
 It has a limitation of its path:
 - lowest position 0 m
-- highest position 5 m.
+- highest position 10 m.
 
 It communicates with the INSPECTION CONSOLE:
 - it sends the position by named pipes
