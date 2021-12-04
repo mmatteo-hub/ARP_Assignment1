@@ -1,3 +1,5 @@
+
+
 ################ MASTER ################
 
 The MASTER is the process responsible of starting the program.
