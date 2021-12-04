@@ -12,18 +12,29 @@
 #define KRED  "\x1B[31m"
 #define KGRN  "\x1B[32m"
 
-// definintion for al variables used inside the program
+// definintion for all variables used inside the program
 int fd_x_write, fd_z_write;
 int fd_x_read, fd_z_read;
 
 char input_string_x[80];
 char input_string_z[80];
-char format_string[80] = "%f";
-
+int fd_pid;
 int pidX_got, pidZ_got, pidWD_got;
 int fdX, fdZ;
 char pid[80];
+int fd_pid_w;
+char ch1[80];
+char out_str[80];
+char var;
+fd_set rfds;
+fd_set rd_stdin;
+struct timeval tv;
+int ret1, ret2;
+int fd_stdin;
+
+// defining format string to prepare the string for the pipe
 char format_string_pid[80] = "%d,%d";
+char format_string[80] = "%f";
 
 // defininf file pointer and a time variable to read the current date
 FILE *f;
@@ -43,7 +54,7 @@ int main(int argc, char * argv[])
     char * watchdog_insp = "/tmp/watchdog_insp";
 
     // getting  motorX pid
-    int fd_pid = open(pid_motX, O_RDONLY);
+    fd_pid = open(pid_motX, O_RDONLY);
     read(fd_pid,pid,80);
     pidX_got = atoi(pid);
     close(fd_pid);
@@ -55,20 +66,12 @@ int main(int argc, char * argv[])
     close(fd_pid);
 
     // getting watchdog pid
-    int fd_pid_w = open(watchdog_insp, O_RDONLY);
+    fd_pid_w = open(watchdog_insp, O_RDONLY);
     read(fd_pid_w,pid,80);
     pidWD_got = atoi(pid);
     close(fd_pid_w);
 
-    // defining some variables used in the progam
-    char ch1[80];
-    char out_str[80];
-    char var;
-    fd_set rfds;
-    fd_set rd_stdin;
-    struct timeval tv;
-    int ret1, ret2;
-    int fd_stdin = fileno(stdin);
+    fd_stdin = fileno(stdin);
 
     // opening pipes to read the value passed from the motors
     fd_x_read = open(fifo_motXinsp, O_RDONLY);

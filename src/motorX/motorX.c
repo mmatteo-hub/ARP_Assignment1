@@ -19,7 +19,25 @@
 FILE *f;
 time_t clk;
 
-float x_position = 0; // motorX positiion
+// definintion for all variables used inside the program
+float x_position = 0; 
+int fd_valX, fdX_write;
+char pid_string[80];
+char passVal[80];
+int sig = 0;
+char pid[80];
+int s;
+int retval;
+char input_string[80];
+char input_str;
+int x_pid;
+int x_pid_w;
+double err;
+
+
+// defining format string to prepare the string for the pipe
+char format_pid_string[80] = "%d";
+char format_string[80] = "%f";
 
 // error on position
 double randomErr()
@@ -36,15 +54,6 @@ int sign()
     if(n >  0.5) return 1;
     else return 0;
 }
-
-int fd_valX, fdX_write;
-char pid_string[80];
-char format_pid_string[80] = "%d";
-
-char passVal[80];
-char format_string[80] = "%f";
-
-int sig = 0;
 
 // signals from inspection
 void sig_handler(int signo)
@@ -81,14 +90,12 @@ int main(int argc, char * argv[])
     char * pid_motX = "/tmp/pid_motX";
     char * pid_motX_watchdog = "/tmp/pid_motX_watch";
 
-    char pid[80];
-
     // writing pid
-    int x_pid = open(pid_motX, O_WRONLY);
+    x_pid = open(pid_motX, O_WRONLY);
     sprintf(pid, format_pid_string, (int)getpid());
     write(x_pid, pid, strlen(pid)+1);
     close(x_pid);
-    int x_pid_w = open(pid_motX_watchdog, O_WRONLY);
+    x_pid_w = open(pid_motX_watchdog, O_WRONLY);
     sprintf(pid, format_pid_string, (int)getpid());
     write(x_pid_w, pid, strlen(pid)+1);
     close(x_pid_w);
@@ -96,10 +103,6 @@ int main(int argc, char * argv[])
     // initialise struct for the select
     fd_set rfds;
     struct timeval tv;
-    int retval;
-
-    char input_string[80];
-    char input_str;
 
     // open pipe
     fd_valX = open(fifo_valX,O_RDONLY);
@@ -107,8 +110,8 @@ int main(int argc, char * argv[])
 
     while(1)
     {   
-        int s = sign();
-        double err = randomErr();
+        s = sign();
+        err = randomErr();
 
         FD_ZERO(&rfds);
         FD_SET(fd_valX,&rfds);

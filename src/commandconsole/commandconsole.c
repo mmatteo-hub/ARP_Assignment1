@@ -13,15 +13,22 @@
 #define KYEL  "\x1B[33m"
 #define KBLU  "\x1B[34m"
 
-// definintion for al variables used inside the program
+// definintion for all variables used inside the program
 int fdX, fdZ, fdX_write, fdZ_write;
-char format_string[80] = "%d";
-char format_str_var[80] = "%c";
 char pid_motX[80];
 char pid_motZ[80];
 char pid_WD[80];
 char pid[80];
 int pidX_got, pidZ_got, pid_wd;
+char ch1[80];
+char var;
+char outup_string[80];
+int fd_wdComm;
+char out_str[80];
+
+// defining format string to prepare the string for the pipe
+char format_string[80] = "%d";
+char format_str_var[80] = "%c";
 
 // defininf file pointer and a time variable to read the current date
 FILE *f;
@@ -32,8 +39,6 @@ int main(int argc, char * argv[])
 {
     // opening the log file in append mod to add to the existing file
     f = fopen("./../log/logfile.txt","a");
-    
-    char outup_string[80];
 
     // pipe from command console to motors
     char * fifo_valX = "/tmp/fifo_valX";
@@ -41,13 +46,10 @@ int main(int argc, char * argv[])
     char * comm_wd = "/tmp/commd_wd";
 
     // get watchdog pid
-    int fd_wdComm = open(comm_wd,O_RDONLY);
+    fd_wdComm = open(comm_wd,O_RDONLY);
     read(fd_wdComm,pid_WD,80);
     pid_wd = atoi(pid_WD);
     close(fd_wdComm);
-    
-    char ch1[80];
-    char var;
 
     // opening pipes to get the value of X and Z motors and pass them to the respective motor
     fdX_write = open(fifo_valX, O_WRONLY);
@@ -72,7 +74,6 @@ int main(int argc, char * argv[])
 
         else
         {
-            char out_str[80];
             sprintf(out_str,format_string,ch1[0]);
             var = ch1[0];
 

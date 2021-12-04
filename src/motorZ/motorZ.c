@@ -19,7 +19,24 @@
 FILE *f;
 time_t clk;
 
-float z_position = 0; // motorX positiion
+// definintion for all variables used inside the program
+float z_position = 0; 
+int fd_valZ, fdZ_write;
+char pid_string[80];
+char passVal[80];
+int sig = 0;
+char pid[80];
+int s;
+int retval;
+char input_string[80];
+char input_str;
+int z_pid;
+int z_pid_w;
+double err;
+
+// defining format string to prepare the string for the pipe
+char format_pid_string[80] = "%d";
+char format_string[80] = "%f";
 
 // error on position
 double randomErr()
@@ -36,15 +53,6 @@ int sign()
     if(n >  0.5) return 1;
     else return 0;
 }
-
-int fd_valZ, fdZ_write;
-char pid_string[80];
-char format_pid_string[80] = "%d";
-
-char passVal[80];
-char format_string[80] = "%f";
-
-int sig = 0;
 
 // signals from inspection
 void sig_handler(int signo)
@@ -84,11 +92,11 @@ int main(int argc, char * argv[])
     char pid[80];
 
     // writing pid
-    int z_pid = open(pid_motZ, O_WRONLY);
+    z_pid = open(pid_motZ, O_WRONLY);
     sprintf(pid, format_pid_string, (int)getpid());
     write(z_pid, pid, strlen(pid)+1);
     close(z_pid);
-    int z_pid_w = open(pid_motZ_watchdog, O_WRONLY);
+    z_pid_w = open(pid_motZ_watchdog, O_WRONLY);
     sprintf(pid, format_pid_string, (int)getpid());
     write(z_pid_w, pid, strlen(pid)+1);
     close(z_pid_w);
@@ -98,17 +106,14 @@ int main(int argc, char * argv[])
     struct timeval tv;
     int retval;
 
-    char input_string[80];
-    char input_str;
-
     // open pipe
     fd_valZ = open(fifo_valZ,O_RDONLY);
     fdZ_write = open(fifo_motZinsp, O_WRONLY);
 
     while(1)
     {   
-        int s = sign();
-        double err = randomErr();
+        s = sign();
+        err = randomErr();
 
         FD_ZERO(&rfds);
         FD_SET(fd_valZ,&rfds);
